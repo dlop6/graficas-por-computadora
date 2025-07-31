@@ -20,7 +20,7 @@ class Model:
         self.texture: Optional[pygame.Surface] = None
         self.texture_data: Optional[np.ndarray] = None
 
-    def load_obj(self, filepath: str, texture_path: str = None): # type: ignore
+    def load_obj(self, filepath: str, texture_path: str = None):
         """Carga un modelo OBJ y opcionalmente su textura"""
         vertices = []
         normals = []

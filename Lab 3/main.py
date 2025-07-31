@@ -72,7 +72,7 @@ def find_texture_file(obj_path: str) -> str:
     return None # type: ignore
 
 def render_shot(renderer: Renderer, model: Model, camera: Camera, 
-               shot_name: str, save_bmp: bool = True) -> pygame.Surface:
+               shot_name: str, save_bmp: bool = True) -> None:
     """Renderiza una toma específica"""
     print(f"Renderizando {shot_name}...")
     
@@ -87,21 +87,15 @@ def render_shot(renderer: Renderer, model: Model, camera: Camera,
     
     # Guardar como BMP si se solicita
     if save_bmp:
-        # Crear carpeta renders si no existe
-        renders_dir = "renders"
-        if not os.path.exists(renders_dir):
-            os.makedirs(renders_dir)
-        
         filename = f"{shot_name.lower().replace(' ', '_')}.bmp"
-        filepath = os.path.join(renders_dir, filename)
-        GenerateBMP(filepath, WIDTH, HEIGHT, 3, renderer.frame_buffer)
-        print(f"{shot_name} guardado como {filepath}")
+        GenerateBMP(filename, WIDTH, HEIGHT, 3, renderer.frame_buffer)
+        print(f"✓ {shot_name} guardado como {filename}")
     
     return renderer.get_framebuffer_as_surface()
 
 def main():
     """Función principal"""
-    print(" Renderizador de Modelos OBJ con Texturas")
+    print("🎬 Renderizador de Modelos OBJ con Texturas")
     print("=" * 50)
     
     # Inicializar pygame
@@ -110,31 +104,31 @@ def main():
     # Buscar archivo OBJ
     obj_path = find_obj_file()
     if not obj_path:
-        print(" Error: No se encontró ningún archivo OBJ")
+        print("❌ Error: No se encontró ningún archivo OBJ")
         print("Por favor, coloca un archivo .obj en una de estas carpetas:")
         print("- obj/")
         print("- models/")
         print("- ../Lab 2/Rasterizer2025/Rasterizer2025/Rasterizer2025/obj/")
         return
     
-    print(f"Modelo encontrado: {obj_path}")
+    print(f"📄 Modelo encontrado: {obj_path}")
     
     # Buscar textura
     texture_path = find_texture_file(obj_path)
     if texture_path:
-        print(f"  Textura encontrada: {texture_path}")
+        print(f"🖼️  Textura encontrada: {texture_path}")
     else:
-        print("No se encontró textura, usando color sólido")
+        print("⚠️  No se encontró textura, usando color sólido")
     
     # Cargar modelo
     model = Model()
     if not model.load_obj(obj_path, texture_path):
-        print(" Error cargando el modelo")
+        print("❌ Error cargando el modelo")
         return
     
     # Auto-centrar y escalar modelo
     model.auto_center_and_scale(1.5)  # Hacer el modelo un poco más pequeño para mejor visibilidad
-    print(f"Modelo centrado y escalado")
+    print(f"✓ Modelo centrado y escalado")
     
     # Crear renderizador
     renderer = Renderer(WIDTH, HEIGHT)
@@ -148,7 +142,7 @@ def main():
     camera_controller = CameraController(ASPECT_RATIO)
     camera_controller.set_distance(3.0)  # Distancia más cercana para mejor detalle
     
-    print("\n Generando las 4 tomas...")
+    print("\n🎥 Generando las 4 tomas...")
     print("-" * 30)
     
     # Crear ventana para mostrar resultados
@@ -178,12 +172,12 @@ def main():
     dutch_surface = render_shot(renderer, model, dutch_camera, "Dutch Angle")
     shots.append(("Dutch Angle", dutch_surface))
     
-    print("\nTodas las tomas generadas exitosamente!")
-    print("\n Archivos generados en la carpeta 'renders':")
-    print("- renders/medium_shot.bmp")
-    print("- renders/low_angle.bmp") 
-    print("- renders/high_angle.bmp")
-    print("- renders/dutch_angle.bmp")
+    print("\n✅ Todas las tomas generadas exitosamente!")
+    print("\n📁 Archivos generados:")
+    print("- medium_shot.bmp")
+    print("- low_angle.bmp") 
+    print("- high_angle.bmp")
+    print("- dutch_angle.bmp")
     
     # Mostrar las 4 tomas en una ventana 2x2
     screen.fill((20, 20, 20))
@@ -208,7 +202,7 @@ def main():
     
     pygame.display.flip()
     
-    print("\nMostrando resultados en ventana...")
+    print("\n🖥️  Mostrando resultados en ventana...")
     print("Presiona cualquier tecla o cierra la ventana para salir")
     
     # Loop de eventos
@@ -225,13 +219,13 @@ def main():
         clock.tick(60)
     
     pygame.quit()
-    print("\n¡Gracias por usar el renderizador!")
+    print("\n👋 ¡Gracias por usar el renderizador!")
 
 if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"❌ Error: {e}")
         import traceback
         traceback.print_exc()
         input("Presiona Enter para salir...")
