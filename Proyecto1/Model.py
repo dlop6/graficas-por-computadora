@@ -1,6 +1,8 @@
 import numpy as np
 import pygame
-from typing import List, Tuple, Optional
+import os
+import glob
+from typing import List, Tuple, Optional, Union
 from MathLib import *
 
 class Model:
@@ -19,8 +21,11 @@ class Model:
         # Textura
         self.texture: Optional[pygame.Surface] = None
         self.texture_data: Optional[np.ndarray] = None
+        
+        # Shader asignado
+        self.assigned_shader: str = "plain"
 
-    def load_obj(self, filepath: str, texture_path: str = None):
+    def load_obj(self, filepath: str, texture_path: Optional[str] = None):
         """Carga un modelo OBJ y opcionalmente su textura"""
         vertices = []
         normals = []
@@ -138,9 +143,32 @@ class Model:
         # Cargar textura si se especifica
         if texture_path:
             self.load_texture(texture_path)
+        else:
+            # Intentar cargar textura automáticamente
+            self._auto_load_textures(filepath)
         
         print(f"Modelo cargado: {len(self.vertices)//3} vértices, {len(faces)} caras")
         return True
+    
+    def _auto_load_textures(self, obj_filepath: str):
+        """Intenta cargar texturas automáticamente basándose en la ubicación del OBJ"""
+        obj_dir = os.path.dirname(obj_filepath)
+        
+        # Buscar archivos de textura comunes
+        texture_patterns = [
+            '*diffuse*.jpg', '*diffuse*.png',
+            '*_dif.jpg', '*_dif.png',
+            '*.jpg', '*.png'
+        ]
+        
+        for pattern in texture_patterns:
+            texture_files = glob.glob(os.path.join(obj_dir, pattern))
+            if texture_files:
+                # Usar la primera textura encontrada
+                texture_file = texture_files[0]
+                print(f"   -> Textura auto-detectada: {os.path.basename(texture_file)}")
+                self.load_texture(texture_file)
+                break
 
     def load_texture(self, texture_path: str):
         """Carga una textura desde un archivo de imagen"""

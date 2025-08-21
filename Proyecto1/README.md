@@ -1,23 +1,30 @@
-# Lab 4 - Shaders Creativos
-# Diego López 23747
+# Proyecto 1 - Rasterizador 3D
+**Diego López 23747**
 
-## Shaders implementados
+## Lo que hace
 
-- **Toon (Cel Shading):**
-  Efecto tipo caricatura, usando bandas de color en vez de un gradiente suave. Hace que el modelo se vea como de cómic o animación.
+Un rasterizador que carga modelos OBJ y los renderiza con diferentes shaders. La escena tiene 4 modelos (gato, perro, caballo, vaca) cada uno con su propio shader.
 
-- **Checkerboard con luz:**
-  Un patrón de ajedrez (cuadros claros y oscuros) combinado con iluminación difusa. Sirve para ver cómo afectan las UVs y la luz al modelo.
+## Modelos y shaders
 
-- **Fresnel (borde brillante):**
-  Resalta los bordes del modelo según el ángulo de la cámara, generando un efecto de contorno brillante. Muy útil para destacar siluetas.
+- **Gato**: Shader con textura y normal mapping (usa Cat_diffuse.jpg)
+- **Perro**: Shader fresnel con efectos de borde brillante (usa Australian_Cattle_Dog_dif.jpg)  
+- **Caballo**: Toon shading estilo cartoon (usa Horse_v01.jpg)
+- **Vaca**: Shader metálico con reflejos especulares
 
-- **Múltiples luces:**
-  Iluminación usando dos fuentes de luz direccionales, lo que da un look más dinámico y realista.
+## Cómo usar
 
-## Notas de uso
+```bash
+python main.py --preview    # Renderizado rápido para testing
+python main.py             # Renderizado completo con shaders
+```
 
-- Los resultados de cada shader se guardan automáticamente en la carpeta `Lab 4/renders/`.
-- Puedes cambiar el shader fácilmente desde el menú o el código.
-- El modelo se auto-centra y rota para que siempre salga bien orientado.
+## Archivos importantes
+
+- `main.py` - Script principal
+- `Shaders.py` - Todos los shaders implementados
+- `Model.py` - Carga de OBJ y texturas
+- `renders/` - Aquí van a estar las escenas con los 4 modelos cada uno
+
+Los modelos se cargan automáticamente con sus texturas y cada uno usa un shader diferente. La escena se renderiza en perspectiva con una cámara posicionada para ver todos los modelos.
 

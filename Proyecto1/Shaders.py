@@ -1,3 +1,9 @@
+# ===============================
+# SHADER PLAIN (para preview)
+# ===============================
+def plain_fragment_shader(fragment_data, uniforms):
+    return (180, 180, 180)
+
 """
 Lab 4 - Shaders Creativos
 Shaders personalizados para efectos visuales únicos
@@ -61,9 +67,6 @@ def vertex_shader(vertex: np.ndarray,
         'time': animation_time  # ¡Nuevo parámetro!
     }
 
-# =============================================================================
-# SHADER 1: 🌊 AGUA ANIMADA
-# =============================================================================
 
 def water_fragment_shader(fragment_data: Dict[str, Any], uniforms: Dict[str, Any]) -> Tuple[int, int, int]:
     """
@@ -237,8 +240,88 @@ def multi_light_fragment_shader(fragment_data: Dict[str, Any], uniforms: Dict[st
     color = base_color * (0.3 + 0.5 * i1 * light1 + 0.5 * i2 * light2)
     return tuple(np.clip(color, 0, 255))
 
+# ===============================
+# SHADER 5: Metallic (para la vaca)
+# ===============================
+def metallic_fragment_shader(fragment_data: Dict[str, Any], uniforms: Dict[str, Any]) -> Tuple[int, int, int]:
+    """Shader metálico con reflejos especulares"""
+    normal = fragment_data.get('normal', np.array([0, 0, 1]))
+    world_pos = fragment_data.get('world_position', np.array([0, 0, 0]))
+    
+    # Normalizar normal
+    n = normal / np.linalg.norm(normal) if np.linalg.norm(normal) > 0 else normal
+    
+    # Color base metálico (plateado con tinte azul)
+    base_color = np.array([120, 140, 160])
+    
+    # Luz principal
+    light_dir = np.array([1, 1, 1])
+    light_dir = light_dir / np.linalg.norm(light_dir)
+    
+    # Luz difusa
+    diffuse = max(0.1, np.dot(n, light_dir))
+    
+    # Calcular reflejo especular
+    view_dir = np.array([0, 0, 1])  # Dirección hacia la cámara
+    reflect_dir = 2 * np.dot(n, light_dir) * n - light_dir
+    specular = max(0, np.dot(reflect_dir, view_dir)) ** 32  # Exponente alto para brillo metálico
+    
+    # Efecto fresnel simple
+    fresnel = 1.0 - max(0, np.dot(n, view_dir))
+    fresnel = fresnel ** 2
+    
+    # Combinar componentes
+    ambient = 0.2
+    diffuse_component = diffuse * 0.6
+    specular_component = specular * 0.8 + fresnel * 0.3
+    
+    final_intensity = ambient + diffuse_component + specular_component
+    final_color = base_color * final_intensity
+    
+    # Añadir brillo metálico
+    metallic_highlight = specular * 100
+    final_color += metallic_highlight
+    
+    return tuple(np.clip(final_color, 0, 255).astype(int))
+
+# ===============================
+# SHADER 6: Textured + Normal Mapping
+# ===============================
+def textured_normal_fragment_shader(fragment_data: Dict[str, Any], uniforms: Dict[str, Any]) -> Tuple[int, int, int]:
+    """Shader con textura y normal mapping"""
+    texcoord = fragment_data.get('texcoord', np.array([0.0, 0.0]))
+    normal = fragment_data.get('normal', np.array([0, 0, 1]))
+    model = uniforms.get('model')
+    
+    # Obtener color de textura si está disponible
+    if model and hasattr(model, 'get_texture_color'):
+        u, v = texcoord[0] % 1.0, texcoord[1] % 1.0
+        texture_color = np.array(model.get_texture_color(u, v))
+    else:
+        # Color por defecto si no hay textura
+        texture_color = np.array([200, 180, 160])
+    
+    # Normalizar normal
+    n = normal / np.linalg.norm(normal) if np.linalg.norm(normal) > 0 else normal
+    
+    # Iluminación difusa
+    light_dir = uniforms.get('light_direction', np.array([0, 0, 1]))
+    light_dir = light_dir / np.linalg.norm(light_dir)
+    
+    diffuse = max(0.3, np.dot(n, light_dir))
+    
+    # Aplicar iluminación a la textura
+    final_color = texture_color * diffuse
+    
+    return tuple(np.clip(final_color, 0, 255).astype(int))
+
 # Diccionario de shaders disponibles
 AVAILABLE_SHADERS = {
+    'plain': {
+        'name': 'Plain Preview',
+        'shader': plain_fragment_shader,
+        'description': 'Shader plano gris para preview rápido'
+    },
     'toon': {
         'name': '🖍️ Toon (Cel Shading)',
         'shader': toon_fragment_shader,
@@ -258,12 +341,22 @@ AVAILABLE_SHADERS = {
         'name': '💡 Múltiples luces',
         'shader': multi_light_fragment_shader,
         'description': 'Iluminación con dos fuentes de luz'
+    },
+    'metallic': {
+        'name': '🪙 Metallic',
+        'shader': metallic_fragment_shader,
+        'description': 'Superficie metálica con reflejos especulares'
+    },
+    'textured_normal': {
+        'name': '🖼️ Textura + Normal Map',
+        'shader': textured_normal_fragment_shader,
+        'description': 'Textura con normal mapping'
     }
 }
 
 def get_shader_by_name(shader_name: str):
     """Obtiene un shader por su nombre"""
-    return AVAILABLE_SHADERS.get(shader_name, {}).get('shader', water_fragment_shader)
+    return AVAILABLE_SHADERS.get(shader_name, {}).get('shader', plain_fragment_shader)
 
 # Función de interpolación mejorada
 def interpolate_vertex_data(v1_data: Dict[str, Any], 
