@@ -1,8 +1,3 @@
-"""
-Material module for the raytracer
-Implements material properties for Phong shading
-"""
-
 import numpy as np
 
 class Material:
@@ -13,24 +8,21 @@ class Material:
         self.shininess = shininess
     
     def get_color(self, ambient_light, lights, point, normal, view_direction):
-        # Componente ambiental
+        # Luz ambiental
         color = self.ambient_color * ambient_light
         
         for light in lights:
-            # Dirección de la luz
             light_direction = light.get_light_direction(point)
             
-            # Componente difusa (Lambert)
+            # Componente difusa
             diffuse_intensity = max(0, np.dot(normal, light_direction))
             diffuse = self.diffuse_color * light.color * diffuse_intensity * light.intensity
             
-            # Componente especular (Phong)
+            # Componente especular
             if diffuse_intensity > 0:
-                # Vector de reflexión
                 reflect_direction = 2 * np.dot(normal, light_direction) * normal - light_direction
                 reflect_direction = reflect_direction / np.linalg.norm(reflect_direction)
                 
-                # Intensidad especular
                 specular_intensity = max(0, np.dot(reflect_direction, view_direction))
                 specular_intensity = pow(specular_intensity, self.shininess)
                 specular = self.specular_color * light.color * specular_intensity * light.intensity
