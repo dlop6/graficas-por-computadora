@@ -19,13 +19,13 @@ framebuffer = np.zeros((HEIGHT, WIDTH, 3), dtype=np.uint8)
 
 # Definir materiales (colores vivos y reflectividad)
 mat_wall = Material([0.95, 0.95, 0.95], 'opaque')
-mat_floor = Material([0.85, 0.85, 0.85], 'opaque')
-mat_cube1 = Material([0.2, 0.6, 1.0], 'reflective', reflectivity=0.5)
-mat_cube2 = Material([1.0, 0.3, 0.1], 'opaque')
-mat_triangle = Material([0.1, 1.0, 0.2], 'opaque')
+mat_floor = Material([0.8, 0.8, 0.85], 'reflective', reflectivity=0.18)  # Piso ligeramente reflectivo
+mat_cube1 = Material([0.1, 0.5, 1.0], 'reflective', reflectivity=0.7)  # Cubo azul brillante reflectivo
+mat_cube2 = Material([1.0, 0.2, 0.2], 'reflective', reflectivity=0.55)  # Cubo rojo brillante reflectivo
+mat_triangle = Material([0.85, 0.85, 0.85], 'reflective', reflectivity=0.85)  # Triángulo metálico reflectivo
 mat_disk = Material([1.0, 1.0, 0.7], 'opaque')  # Disco "emissive"
 
-# Crear figuras del cuarto (objetos centrados y visibles)
+# Crear figuras del cuarto (objetos centrados y visibles, mejor composición)
 scene = [
     # Pared trasera
     Plane([0, 0, -10], [0, 0, 1], mat_wall),
@@ -38,18 +38,18 @@ scene = [
     # Pared derecha
     Plane([5, 0, 0], [-1, 0, 0], mat_wall),
     # Cubos
-    Cube([-1.7, -2.2, -7], 1.5, mat_cube1),
-    Cube([1.7, -1.5, -6.2], 1.2, mat_cube2),
-    # Triángulo
-    Triangle([0, -2.5, -5.5], [1.5, -1, -5.5], [-1.5, -1, -5.5], mat_triangle),
+    Cube([-2.2, -2.2, -7.5], 1.5, mat_cube1),
+    Cube([2.2, -2.0, -6.5], 1.2, mat_cube2),
+    # Triángulo (más cerca del centro)
+    Triangle([0, -2.5, -5.2], [1.5, -1, -5.2], [-1.5, -1, -5.2], mat_triangle),
     # Disco (luz)
     Disk([0, 2.7, -7], [0, -1, 0], 1.1, mat_disk),
 ]
 
 # Luz y cámara mejoradas
 light_pos = np.array([0, 2.7, -7], dtype=float)  # Coincide con el disco
-light_color = np.array([1.7, 1.5, 1.2], dtype=float)  # Más intensa
-ambient = 0.28  # Más luz ambiental
+light_color = np.array([1.8, 1.7, 1.3], dtype=float)  # Luz intensa y cálida
+ambient = 0.22  # Luz ambiental balanceada
 shadow_diffuse_factor = 0.13  # Sombra más marcada
 camera_pos = np.array([0, 0.5, 2.5], dtype=float)  # Más cerca y centrada
 
