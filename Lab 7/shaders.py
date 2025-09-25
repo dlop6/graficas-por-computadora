@@ -17,7 +17,7 @@ def vertexShader(vertex, **kwargs):
 
     vt = vt.tolist()[0]
 
-	# Dividimos x,y,z por w para regresar el vertices a un tamaño de 3
+	# Dividimos x,y,z por w para regresar el vertices a un tamaï¿½o de 3
     vt = [vt[0] / vt[3],
           vt[1] / vt[3],
           vt[2] / vt[3]]

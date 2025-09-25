@@ -1,7 +1,148 @@
-
 POINTS = 0
 LINES = 1
 TRIANGLES = 2
+
+# --- Figuras y materiales para Raytracer ---
+import numpy as np
+
+class Material:
+    def __init__(self, color, mat_type='opaque', ior=1.0, reflectivity=0.0):
+        self.color = np.array(color, dtype=float)  # RGB [0,1]
+        self.type = mat_type  # 'opaque', 'reflective', 'transparent'
+        self.ior = ior        # Índice de refracción (solo para transparentes)
+        self.reflectivity = reflectivity  # 0=mate, 1=espejo
+
+class Sphere:
+    def __init__(self, center, radius, material):
+        self.center = np.array(center, dtype=float)
+        self.radius = radius
+        self.material = material
+
+    def intersect(self, ray_origin, ray_dir):
+        L = self.center - ray_origin
+        tca = np.dot(L, ray_dir)
+        d2 = np.dot(L, L) - tca * tca
+        r2 = self.radius * self.radius
+        if d2 > r2:
+            return None
+        thc = np.sqrt(r2 - d2)
+        t0 = tca - thc
+        t1 = tca + thc
+        if t0 > 0:
+            return t0
+        if t1 > 0:
+            return t1
+        return None
+
+    def get_normal(self, point):
+        return (point - self.center) / self.radius
+
+class Plane:
+    def __init__(self, point, normal, material):
+        self.point = np.array(point, dtype=float)
+        self.normal = np.array(normal, dtype=float) / np.linalg.norm(normal)
+        self.material = material
+
+    def intersect(self, ray_origin, ray_dir):
+        denom = np.dot(self.normal, ray_dir)
+        if np.abs(denom) < 1e-6:
+            return None
+        t = np.dot(self.point - ray_origin, self.normal) / denom
+        if t > 0:
+            return t
+        return None
+
+    def get_normal(self, point):
+        return self.normal
+
+class Disk:
+    def __init__(self, center, normal, radius, material):
+        self.center = np.array(center, dtype=float)
+        self.normal = np.array(normal, dtype=float) / np.linalg.norm(normal)
+        self.radius = radius
+        self.material = material
+
+    def intersect(self, ray_origin, ray_dir):
+        denom = np.dot(self.normal, ray_dir)
+        if np.abs(denom) < 1e-6:
+            return None
+        t = np.dot(self.center - ray_origin, self.normal) / denom
+        if t < 0:
+            return None
+        hit = ray_origin + t * ray_dir
+        if np.linalg.norm(hit - self.center) <= self.radius:
+            return t
+        return None
+
+    def get_normal(self, point):
+        return self.normal
+
+class Triangle:
+    def __init__(self, v0, v1, v2, material):
+        self.v0 = np.array(v0, dtype=float)
+        self.v1 = np.array(v1, dtype=float)
+        self.v2 = np.array(v2, dtype=float)
+        self.material = material
+
+    def intersect(self, ray_origin, ray_dir):
+        eps = 1e-6
+        edge1 = self.v1 - self.v0
+        edge2 = self.v2 - self.v0
+        h = np.cross(ray_dir, edge2)
+        a = np.dot(edge1, h)
+        if -eps < a < eps:
+            return None
+        f = 1.0 / a
+        s = ray_origin - self.v0
+        u = f * np.dot(s, h)
+        if u < 0.0 or u > 1.0:
+            return None
+        q = np.cross(s, edge1)
+        v = f * np.dot(ray_dir, q)
+        if v < 0.0 or u + v > 1.0:
+            return None
+        t = f * np.dot(edge2, q)
+        if t > eps:
+            return t
+        return None
+
+    def get_normal(self, point):
+        return np.cross(self.v1 - self.v0, self.v2 - self.v0) / np.linalg.norm(np.cross(self.v1 - self.v0, self.v2 - self.v0))
+
+class Cube:
+    def __init__(self, center, size, material):
+        self.center = np.array(center, dtype=float)
+        self.size = size
+        self.material = material
+        self.bounds_min = self.center - size/2
+        self.bounds_max = self.center + size/2
+
+    def intersect(self, ray_origin, ray_dir):
+        tmin = (self.bounds_min - ray_origin) / (ray_dir + 1e-8)
+        tmax = (self.bounds_max - ray_origin) / (ray_dir + 1e-8)
+        t1 = np.minimum(tmin, tmax)
+        t2 = np.maximum(tmin, tmax)
+        t_near = np.max(t1)
+        t_far = np.min(t2)
+        if t_near > t_far or t_far < 0:
+            return None
+        if t_near < 0:
+            return t_far
+        return t_near
+
+    def get_normal(self, point):
+        p = point - self.center
+        half = self.size / 2
+        for i in range(3):
+            if np.isclose(p[i], half):
+                n = np.zeros(3)
+                n[i] = 1
+                return n
+            if np.isclose(p[i], -half):
+                n = np.zeros(3)
+                n[i] = -1
+                return n
+        return np.zeros(3)
 
 class Renderer(object):
 	def __init__(self, screen):
