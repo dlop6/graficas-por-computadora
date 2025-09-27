@@ -68,14 +68,6 @@ while isRunning:
 		triangleModel.scale = [(i - deltaTime) for i in triangleModel.scale ]
 
 
-
-
-
-
-
-
-
-
 	rend.glClear()
 
 	# Escribir lo que se va a dibujar aqui
