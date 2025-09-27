@@ -1,0 +1,17 @@
+Universidad del Valle de Guatemala - 2025
+GRÁFICAS POR COMPUTADORA - SECCIÓN 20 - 2025
+Diego López 23747
+
+Link: https://chatgpt.com/share/686f5531-dbd0-800b-9994-e7dfe1f0d80b 
+
+Para el desarrollo de este laboratorio, consulté con ChatGPT sobre cómo implementar desde cero algunos algoritmos gráficos 
+fundamentales en Python sin usar librerías externas. Empecé preguntando cómo construir una matriz de píxeles 2D de forma manual, y 
+luego cómo implementar el algoritmo de Bresenham para trazar líneas entre dos puntos en esa matriz. 
+Me explicó el procedimiento paso a paso, incluyendo cómo calcular las pendientes con solo operaciones enteras, y cómo avanzar en el eje X o Y según 
+la dirección del trazo. Este algoritmo me permitió marcar píxeles entre dos puntos correctamente en la matriz.
+
+Luego lo más complicadpo fue el  algoritmo Scanline Fill, que me ayudó a entender el principio de recorrer fila por fila (y) y 
+encontrar los puntos de intersección entre esa línea y los bordes del polígono. En cada fila, estas intersecciones determinan los pares entre l
+os que se deben rellenar los píxeles. Fue clave entender que solo se consideran bordes que cruzan esa línea horizontal (y0 <= y < y1) p
+ara evitar duplicados y errores en el relleno.
+
