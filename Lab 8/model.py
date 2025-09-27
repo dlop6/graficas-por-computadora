@@ -2,10 +2,13 @@ from MathLib import *
 
 class Model(object):
     def __init__(self):
-        self.vertices = []  # type: ignore
-        self.translation = [0.0, 0.0, 0.0]
-        self.rotation = [0.0, 0.0, 0.0]
-        self.scale = [1.0, 1.0, 1.0]
+
+        self.vertices = [ ]
+
+        self.translation = [0,0,0]
+        self.rotation = [0,0,0]
+        self.scale = [1,1,1]
+
         self.vertexShader = None
 
 

@@ -15,11 +15,11 @@ rend = Renderer(screen)
 # triangle3 = [[510,70], [550, 160], [570,80] ]
 
 triangleModel = Model()
-triangleModel.vertices = [ 110.0,  70.0, 0.0,
-						   150.0, 160.0, 0.0,
-						   170.0,  80.0, 0.0 ]
+triangleModel.vertices = [ 110,  70, 0,
+						   150, 160, 0,
+						   170,  80, 0 ]
 
-triangleModel.vertexShader = vertexShader  # type: ignore
+triangleModel.vertexShader = vertexShader
 
 rend.models.append(triangleModel)
 
@@ -49,23 +49,32 @@ while isRunning:
 	keys = pygame.key.get_pressed()
 
 	if keys[pygame.K_RIGHT]:
-		triangleModel.translation[0] += 10.0 * deltaTime
+		triangleModel.translation[0] += 10 * deltaTime
 	if keys[pygame.K_LEFT]:
-		triangleModel.translation[0] -= 10.0 * deltaTime
+		triangleModel.translation[0] -= 10 * deltaTime
 	if keys[pygame.K_UP]:
-		triangleModel.translation[1] += 10.0 * deltaTime
+		triangleModel.translation[1] += 10 * deltaTime
 	if keys[pygame.K_DOWN]:
-		triangleModel.translation[1] -= 10.0 * deltaTime
+		triangleModel.translation[1] -= 10 * deltaTime
+
 
 	if keys[pygame.K_d]:
-		triangleModel.rotation[2] += 20.0 * deltaTime
+		triangleModel.rotation[2] += 20 * deltaTime
 	if keys[pygame.K_a]:
-		triangleModel.rotation[2] -= 20.0 * deltaTime
+		triangleModel.rotation[2] -= 20 * deltaTime
 
 	if keys[pygame.K_w]:
 		triangleModel.scale =  [(i + deltaTime) for i in triangleModel.scale]
 	if keys[pygame.K_s]:
 		triangleModel.scale = [(i - deltaTime) for i in triangleModel.scale ]
+
+
+
+
+
+
+
+
 
 
 	rend.glClear()
@@ -79,10 +88,6 @@ while isRunning:
 	pygame.display.flip()
 
 
-def convert_buffer(buffer):
-	# Convierte listas [r,g,b] a tuplas (r,g,b) para cada pixel, asegurando longitud 3
-	return [[tuple(pixel[:3]) if isinstance(pixel, (list, tuple)) and len(pixel) >= 3 else (0,0,0) for pixel in col] for col in buffer]
-
-GenerateBMP("output.bmp", width, height, 3, convert_buffer(rend.frameBuffer))  # type: ignore
+GenerateBMP("output.bmp", width, height, 3, rend.frameBuffer)
 
 pygame.quit()
