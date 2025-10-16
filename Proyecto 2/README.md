@@ -53,6 +53,7 @@ Evidencia y referencias concretas
 
 6) Escena con >10 objetos (evidencia en `pikmin_scene.py`)
 - `pikmin_scene.py` hace múltiples `objects.append(...)` para componer la escena. 
+- **ACTUALIZACIÓN**: Se agregó rama horizontal compuesta de 18 esferas superpuestas (líneas ~460-475 en `pikmin_scene.py`) para simular un cilindro horizontal texturizado, evitando la necesidad de rotación de primitivas. Esto incrementa el conteo total a **87 primitivas** (antes ~69).
 
 Evidencia visual puntual (en la imagen proporcionada):
 
@@ -67,5 +68,6 @@ Evidencia visual puntual (en la imagen proporcionada):
 - Torus: anillo/toro bajo la esfera roja (izquierda).
 - OBJ: pequeño cubo entre los Pikmin y la orbe plateada (centro-derecha) corresponde al `cube.obj` o su reemplazo.
 - Iluminación múltiple: sombras y especulares en varias direcciones en el suelo y objetos (evidencia visual de múltiples fuentes).
-- >10 objetos: más de 10 objetos visibles 
+- >10 objetos: más de 10 objetos visibles
+- **Rama horizontal**: Presente en versión actualizada (18 esferas texturizadas simulando cilindro horizontal donde se posan los Pikmin)
 

@@ -120,7 +120,7 @@ objects = []
 
 # 1.1 Cuerpo
 objects.append(Capsule(
-    center=(-0.8, 0.38, -0.3),
+    center=(-0.8, 0.72, 0.3),  # Ajustado: Y=0.72 sobre rama, Z acercado a cámara
     radius=0.12,
     height=0.4,
     material=mat_blue_pikmin
@@ -128,38 +128,38 @@ objects.append(Capsule(
 
 # 1.2 Cabeza
 objects.append(Sphere(
-    center=(-0.8, 0.9, -0.3),
+    center=(-0.8, 1.24, 0.3),  # Ajustado: Y+0.52 desde cuerpo
     radius=0.15,
     material=mat_blue_pikmin
 ))
 
 # 1.3-1.4 Ojos blancos
 objects.append(Sphere(
-    center=(-0.84, 0.92, -0.17),
+    center=(-0.84, 1.26, 0.43),  # Y+0.12 ajustado
     radius=0.045,
     material=mat_white
 ))
 objects.append(Sphere(
-    center=(-0.76, 0.92, -0.17),
+    center=(-0.76, 1.26, 0.43),  # Y+0.12 ajustado
     radius=0.045,
     material=mat_white
 ))
 
 # 1.5-1.6 Pupilas negras
 objects.append(Sphere(
-    center=(-0.84, 0.92, -0.135),
+    center=(-0.84, 1.26, 0.465),  # Y+0.12 ajustado
     radius=0.018,
     material=mat_black
 ))
 objects.append(Sphere(
-    center=(-0.76, 0.92, -0.135),
+    center=(-0.76, 1.26, 0.465),  # Y+0.12 ajustado
     radius=0.018,
     material=mat_black
 ))
 
 # 1.7 Tallo (stem)
 objects.append(Cylinder(
-    center=(-0.8, 1.05, -0.3),
+    center=(-0.8, 1.39, 0.3),  # Y+0.12 ajustado
     radius=0.018,
     height=0.16,
     material=mat_stem_green
@@ -167,20 +167,20 @@ objects.append(Cylinder(
 
 # 1.8 Flor/Hoja del tallo
 objects.append(Sphere(
-    center=(-0.8, 1.23, -0.3),
+    center=(-0.8, 1.57, 0.3),  # Y+0.12 ajustado
     radius=0.035,
     material=mat_flower_yellow
 ))
 
 # 1.9-1.10 Brazos (cilindros pequeños - simplificados como verticales)
 objects.append(Cylinder(
-    center=(-0.92, 0.5, -0.3),
+    center=(-0.92, 0.84, 0.3),  # Y+0.12 ajustado (mitad del cuerpo)
     radius=0.022,
     height=0.18,
     material=mat_blue_pikmin
 ))
 objects.append(Cylinder(
-    center=(-0.68, 0.5, -0.3),
+    center=(-0.68, 0.84, 0.3),  # Y+0.12 ajustado (mitad del cuerpo)
     radius=0.022,
     height=0.18,
     material=mat_blue_pikmin
@@ -188,13 +188,13 @@ objects.append(Cylinder(
 
 # 1.11-1.12 Patas
 objects.append(Cylinder(
-    center=(-0.85, 0.3, -0.3),
+    center=(-0.85, 0.64, 0.3),  # Base del cuerpo Y+0.12
     radius=0.03,
     height=0.08,
     material=mat_blue_pikmin_dark
 ))
 objects.append(Cylinder(
-    center=(-0.75, 0.3, -0.3),
+    center=(-0.75, 0.64, 0.3),  # Base del cuerpo Y+0.12
     radius=0.03,
     height=0.08,
     material=mat_blue_pikmin_dark
@@ -206,7 +206,7 @@ objects.append(Cylinder(
 
 # 2.1 Cuerpo
 objects.append(Capsule(
-    center=(-0.3, 0.38, -0.2),
+    center=(-0.3, 0.72, 0.4),  # Y=0.72 sobre rama, Z acercado
     radius=0.12,
     height=0.4,
     material=mat_yellow_pikmin
@@ -214,50 +214,50 @@ objects.append(Capsule(
 
 # 2.2 Cabeza
 objects.append(Sphere(
-    center=(-0.3, 0.9, -0.2),
+    center=(-0.3, 1.24, 0.4),  # Y+0.52 desde cuerpo
     radius=0.15,
     material=mat_yellow_pikmin
 ))
 
 # 2.3-2.4 Ojos blancos
 objects.append(Sphere(
-    center=(-0.34, 0.92, -0.07),
+    center=(-0.34, 1.26, 0.53),  # Y+0.12 ajustado
     radius=0.045,
     material=mat_white
 ))
 objects.append(Sphere(
-    center=(-0.26, 0.92, -0.07),
+    center=(-0.26, 1.26, 0.53),  # Y+0.12 ajustado
     radius=0.045,
     material=mat_white
 ))
 
 # 2.5-2.6 Pupilas negras
 objects.append(Sphere(
-    center=(-0.34, 0.92, -0.035),
+    center=(-0.34, 1.26, 0.565),  # Y+0.12 ajustado
     radius=0.018,
     material=mat_black
 ))
 objects.append(Sphere(
-    center=(-0.26, 0.92, -0.035),
+    center=(-0.26, 1.26, 0.565),  # Y+0.12 ajustado
     radius=0.018,
     material=mat_black
 ))
 
 # 2.7-2.8 Orejas (característica del Pikmin amarillo)
 objects.append(Sphere(
-    center=(-0.42, 0.95, -0.2),
+    center=(-0.42, 1.29, 0.4),  # Y+0.12 ajustado
     radius=0.038,
     material=mat_yellow_pikmin_dark
 ))
 objects.append(Sphere(
-    center=(-0.18, 0.95, -0.2),
+    center=(-0.18, 1.29, 0.4),  # Y+0.12 ajustado
     radius=0.038,
     material=mat_yellow_pikmin_dark
 ))
 
 # 2.9 Tallo
 objects.append(Cylinder(
-    center=(-0.3, 1.05, -0.2),
+    center=(-0.3, 1.39, 0.4),  # Y+0.12 ajustado
     radius=0.018,
     height=0.16,
     material=mat_stem_green
@@ -265,20 +265,20 @@ objects.append(Cylinder(
 
 # 2.10 Flor del tallo
 objects.append(Sphere(
-    center=(-0.3, 1.23, -0.2),
+    center=(-0.3, 1.57, 0.4),  # Y+0.12 ajustado
     radius=0.035,
     material=mat_flower_white
 ))
 
 # 2.11-2.12 Brazos
 objects.append(Cylinder(
-    center=(-0.42, 0.5, -0.2),
+    center=(-0.42, 0.84, 0.4),  # Y+0.12 ajustado (mitad del cuerpo)
     radius=0.022,
     height=0.18,
     material=mat_yellow_pikmin
 ))
 objects.append(Cylinder(
-    center=(-0.18, 0.5, -0.2),
+    center=(-0.18, 0.84, 0.4),  # Y+0.12 ajustado (mitad del cuerpo)
     radius=0.022,
     height=0.18,
     material=mat_yellow_pikmin
@@ -286,13 +286,13 @@ objects.append(Cylinder(
 
 # 2.13-2.14 Patas
 objects.append(Cylinder(
-    center=(-0.35, 0.3, -0.2),
+    center=(-0.35, 0.64, 0.4),  # Base del cuerpo Y+0.12
     radius=0.03,
     height=0.08,
     material=mat_yellow_pikmin_dark
 ))
 objects.append(Cylinder(
-    center=(-0.25, 0.3, -0.2),
+    center=(-0.25, 0.64, 0.4),  # Base del cuerpo Y+0.12
     radius=0.03,
     height=0.08,
     material=mat_yellow_pikmin_dark
@@ -304,7 +304,7 @@ objects.append(Cylinder(
 
 # 3.1 Cuerpo
 objects.append(Capsule(
-    center=(0.3, 0.38, -0.25),
+    center=(0.3, 0.72, 0.35),  # Y=0.72 sobre rama, Z acercado
     radius=0.12,
     height=0.4,
     material=mat_red_pikmin
@@ -312,38 +312,38 @@ objects.append(Capsule(
 
 # 3.2 Cabeza
 objects.append(Sphere(
-    center=(0.3, 0.9, -0.25),
+    center=(0.3, 1.24, 0.35),  # Y+0.52 desde cuerpo
     radius=0.15,
     material=mat_red_pikmin
 ))
 
 # 3.3-3.4 Ojos blancos
 objects.append(Sphere(
-    center=(0.26, 0.92, -0.12),
+    center=(0.26, 1.26, 0.48),  # Y+0.12 ajustado
     radius=0.045,
     material=mat_white
 ))
 objects.append(Sphere(
-    center=(0.34, 0.92, -0.12),
+    center=(0.34, 1.26, 0.48),  # Y+0.12 ajustado
     radius=0.045,
     material=mat_white
 ))
 
 # 3.5-3.6 Pupilas negras
 objects.append(Sphere(
-    center=(0.26, 0.92, -0.085),
+    center=(0.26, 1.26, 0.515),  # Y+0.12 ajustado
     radius=0.018,
     material=mat_black
 ))
 objects.append(Sphere(
-    center=(0.34, 0.92, -0.085),
+    center=(0.34, 1.26, 0.515),  # Y+0.12 ajustado
     radius=0.018,
     material=mat_black
 ))
 
 # 3.7 Nariz (característica del Pikmin rojo)
 objects.append(Cone(
-    base_center=(0.3, 0.88, -0.11),
+    base_center=(0.3, 1.22, 0.49),  # Y+0.12 ajustado
     base_radius=0.04,
     height=0.06,
     material=mat_red_pikmin_dark
@@ -351,7 +351,7 @@ objects.append(Cone(
 
 # 3.8 Tallo
 objects.append(Cylinder(
-    center=(0.3, 1.05, -0.25),
+    center=(0.3, 1.39, 0.35),  # Y+0.12 ajustado
     radius=0.018,
     height=0.16,
     material=mat_stem_green
@@ -359,20 +359,20 @@ objects.append(Cylinder(
 
 # 3.9 Hoja del tallo
 objects.append(Sphere(
-    center=(0.3, 1.23, -0.25),
+    center=(0.3, 1.57, 0.35),  # Y+0.12 ajustado
     radius=0.035,
     material=mat_leaf_green
 ))
 
 # 3.10-3.11 Brazos
 objects.append(Cylinder(
-    center=(0.18, 0.5, -0.25),
+    center=(0.18, 0.84, 0.35),  # Y+0.12 ajustado (mitad del cuerpo)
     radius=0.022,
     height=0.18,
     material=mat_red_pikmin
 ))
 objects.append(Cylinder(
-    center=(0.42, 0.5, -0.25),
+    center=(0.42, 0.84, 0.35),  # Y+0.12 ajustado (mitad del cuerpo)
     radius=0.022,
     height=0.18,
     material=mat_red_pikmin
@@ -380,13 +380,13 @@ objects.append(Cylinder(
 
 # 3.12-3.13 Patas
 objects.append(Cylinder(
-    center=(0.25, 0.3, -0.25),
+    center=(0.25, 0.64, 0.35),  # Base del cuerpo Y+0.12
     radius=0.03,
     height=0.08,
     material=mat_red_pikmin_dark
 ))
 objects.append(Cylinder(
-    center=(0.35, 0.3, -0.25),
+    center=(0.35, 0.64, 0.35),  # Base del cuerpo Y+0.12
     radius=0.03,
     height=0.08,
     material=mat_red_pikmin_dark
@@ -398,56 +398,56 @@ objects.append(Cylinder(
 
 # 4.1 Cuerpo principal
 objects.append(Sphere(
-    center=(1.2, 0.42, -0.5),
+    center=(1.2, 0.70, -0.2),  # Y=0.70 sobre rama, Z=-0.2 (detrás Pikmin, delante rama)
     radius=0.28,
     material=mat_bulborb_blue
 ))
 
 # 4.2-4.3 Ojos blancos
 objects.append(Sphere(
-    center=(1.12, 0.58, -0.26),
+    center=(1.12, 0.86, 0.04),  # Ajustado a nueva posición
     radius=0.08,
     material=mat_white
 ))
 objects.append(Sphere(
-    center=(1.28, 0.58, -0.26),
+    center=(1.28, 0.86, 0.04),  # Ajustado a nueva posición
     radius=0.08,
     material=mat_white
 ))
 
 # 4.4-4.5 Pupilas negras
 objects.append(Sphere(
-    center=(1.12, 0.58, -0.21),
+    center=(1.12, 0.86, 0.09),  # Ajustado a nueva posición
     radius=0.03,
     material=mat_black
 ))
 objects.append(Sphere(
-    center=(1.28, 0.58, -0.21),
+    center=(1.28, 0.86, 0.09),  # Ajustado a nueva posición
     radius=0.03,
     material=mat_black
 ))
 
 # 4.6-4.9 Patas (4 cilindros)
 objects.append(Cylinder(
-    center=(1.05, 0.14, -0.38),
+    center=(1.05, 0.46, -0.08),  # Ajustado a nueva posición
     radius=0.025,
     height=0.14,
     material=mat_bulborb_gray
 ))
 objects.append(Cylinder(
-    center=(1.35, 0.14, -0.38),
+    center=(1.35, 0.46, -0.08),  # Ajustado a nueva posición
     radius=0.025,
     height=0.14,
     material=mat_bulborb_gray
 ))
 objects.append(Cylinder(
-    center=(1.05, 0.14, -0.62),
+    center=(1.05, 0.46, -0.32),  # Ajustado a nueva posición
     radius=0.025,
     height=0.14,
     material=mat_bulborb_gray
 ))
 objects.append(Cylinder(
-    center=(1.35, 0.14, -0.62),
+    center=(1.35, 0.46, -0.32),  # Ajustado a nueva posición
     radius=0.025,
     height=0.14,
     material=mat_bulborb_gray
@@ -463,7 +463,7 @@ branch_radius = 0.28
 branch_start_x = -1.75
 branch_end_x = 1.75
 branch_y = 0.3
-branch_z = 0.0
+branch_z = -0.5  # Movida atrás para no tapar los Pikmin
 num_spheres = 18
 
 for i in range(num_spheres):
@@ -480,7 +480,7 @@ for i in range(num_spheres):
 # ============================================================================
 
 objects.append(Sphere(
-    center=(-1.3, 0.62, -0.4),
+    center=(-1.3, 0.72, -0.3),
     radius=0.22,
     material=mat_tomato
 ))
@@ -558,7 +558,7 @@ if os.path.exists(obj_path):
     
     # Transformación: posición + escala + rotación
     transform = (
-        TranslationMatrix(0.8, 0.33, -0.6) @
+        TranslationMatrix(0.8, 0.73, -0.3) @
         ScaleMatrix(0.15, 0.25, 0.15) @
         RotationMatrix(15, 25, 0)
     )
