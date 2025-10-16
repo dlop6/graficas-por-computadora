@@ -497,12 +497,12 @@ objects.append(Cylinder(
     material=mat_glass_bottle
 ))
 
-# 7.2 Base decorativa (toro)
+# 7.2 Dona decorativa flotante (toro) - MOVIDA AL PRIMER PLANO
 objects.append(Torus(
-    center=(-1.5, 0.08, -1.2),
-    major_radius=0.16,
-    minor_radius=0.04,
-    material=mat_glass_bottle
+    center=(-0.5, 1.15, 0.2),  # Flotando entre Pikmin Azul y Amarillo, primer plano
+    major_radius=0.22,  # Más grande para ser visible
+    minor_radius=0.06,  # Grosor del tubo aumentado
+    material=mat_flower_violet  # Material opaco y colorido (rosado/violeta)
 ))
 
 # ============================================================================
