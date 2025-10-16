@@ -1,0 +1,23 @@
+# Archivos y carpetas a ignorar
+__pycache__/
+*.pyc
+*.pyo
+*.tmp
+*.log
+*.bak
+*.swp
+*.DS_Store
+outputs/*.bmp
+outputs/*.png
+outputs/*.jpg
+assets/*.zip
+assets/*.rar
+assets/*.7z
+.idea/
+.vscode/
+.env
+*.exe
+*.dll
+*.so
+*.out
+*.bin
