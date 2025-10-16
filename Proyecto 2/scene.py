@@ -2,10 +2,12 @@ import os
 from primitives import Sphere, Plane, Cylinder
 from materials import Lambertian, Metal, Refractive
 from HDRTexture import HDRTexture
+from lighting import create_default_lighting
 
 
 def build_scene():
-    """Construye una escena simple con 3 esferas, 1 plano y envmap."""
+    """Construye una escena simple con 3 esferas, 1 plano y envmap.
+    Ahora con sistema de iluminación múltiple."""
     
     # Cargar envmap
     base_dir = os.path.dirname(__file__)
@@ -44,10 +46,15 @@ def build_scene():
     Plane((0, -0.5, -1.5), (0, 1, 0), mat_ground, scale=5.0),
     ]
     
+    # Sistema de iluminación
+    lighting = create_default_lighting()
+    
     # Empaquetar escena
     return {
         'objects': objects,
         'envmap': envmap,
+        'lights': lighting['lights'],
+        'ambient': lighting['ambient'],
         'camera': {
             'pos': (0, 0.8, 3.5),
             'look_at': (0, 0.5, 0),

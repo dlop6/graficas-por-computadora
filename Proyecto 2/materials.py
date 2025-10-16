@@ -8,8 +8,9 @@ from refractionFunctions import refractVector, fresnel
 def normalize(v):
     v = np.array(v, dtype=float)
     n = np.linalg.norm(v)
-    if n == 0:
-        return v
+    if n < 1e-10:
+        # Fallback seguro para vector cero
+        return np.array([0, 1, 0], dtype=float)
     return v / n
 
 def clamp01(c):
@@ -46,7 +47,12 @@ class Metal:
         n = normalize(normal)
         l = normalize(light_dir)
         v = normalize(view_dir)
-        h = normalize(v + l)
+        h_vec = v + l
+        h_len = np.linalg.norm(h_vec)
+        if h_len < 1e-10:
+            h = np.array([0, 1, 0], dtype=float)
+        else:
+            h = h_vec / h_len
         ndotl = max(0.0, np.dot(n, l))
         ndoth = max(0.0, np.dot(n, h))
         diffuse = np.array(self.color) * ndotl * 0.3

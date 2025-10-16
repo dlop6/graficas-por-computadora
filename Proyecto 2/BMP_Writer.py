@@ -35,9 +35,10 @@ def GenerateBMP(filename: str, width: int, height: int, byteDepth: int, colorBuf
         file.write(dword(0))
         file.write(dword(0))
         
-        # Color table
-        for y in range(height):
+        # Color table (BMP writes bottom-to-top, left-to-right)
+        # colorBuffer es [x][y] donde x=columna, y=fila
+        for y in range(height - 1, -1, -1):  # Bottom to top
             for x in range(width):
                 color = colorBuffer[x][y]
-                for i in range(len(color) - 1, -1, -1):
+                for i in range(len(color) - 1, -1, -1):  # BGR order
                     file.write(color[i].to_bytes(1, "little"))

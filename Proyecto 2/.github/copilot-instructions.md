@@ -20,8 +20,12 @@ This is an educational ray tracer implementing physically-based rendering with c
 
 ## Key Implementation Patterns
 
-### Adding New Primitives
-New primitives must implement the `intersect(ray)` method returning `HitInfo` or `None`:
+### Available Primitives (7 total + Triangle)
+**Basic (3):** Sphere, Plane, Cylinder
+**New (4) ✅:** Capsule, Cone, Disk, Torus
+**Mesh:** Triangle (for OBJ models)
+
+All primitives implement `intersect(ray)` returning `HitInfo` or `None`:
 ```python
 class NewPrimitive:
     def intersect(self, ray):
@@ -31,7 +35,11 @@ class NewPrimitive:
         # 4. Compute UV coordinates for texturing
         return HitInfo(t, point, normal, self.material, (u, v))
 ```
-See `Sphere.intersect()` (quadratic equation) and `Cylinder.intersect()` (lateral + caps) for reference.
+
+**Capsule**: Cylinder + 2 hemispheres (perfect for character bodies)
+**Cone**: Circular base + apex point (useful for hats, noses, vegetation)
+**Disk**: Flat circle in 3D (leaves, petals, flowers)
+**Torus**: Donut shape via quartic equation (rings, bases, decorative elements)
 
 ### Material System
 Materials define `shade()` methods with type-specific signatures:
@@ -48,17 +56,29 @@ HDR envmaps must be sampled in three contexts:
 
 Use `HDRTexture.sample_equirect(direction)` with normalized direction vectors. The class handles equirectangular UV mapping: `u = atan2(z,x)/(2π)+0.5`, `v = acos(y)/π`.
 
-### OBJ Model Loading
-`OBJModel` (in `model.py`) parses Wavefront OBJ with vertex/normal/UV indices:
+### OBJ Model Loading ✅
+`OBJModel` (in `model.py`) parses Wavefront OBJ with full support:
 - Stores `vertices`, `normals`, `uvs`, `faces` as lists
 - `parse_face_vertex()` handles formats: `v/vt/vn`, `v//vn`, `v/vt`, `v`
 - Faces with >3 vertices are fan-triangulated: `[v0, v1, v2], [v0, v2, v3], ...`
-- MTL materials are loaded but must be manually mapped to internal material classes
+- `to_triangles(material, transform_matrix)` converts to raytracer-ready Triangle objects
 
-**Important**: OBJ models are NOT automatically integrated into the ray tracer. You must:
-1. Convert `OBJModel.faces` into triangle primitives (requires a `Triangle` class)
-2. Implement `Triangle.intersect()` using barycentric coordinates or Möller-Trumbore algorithm
-3. Add triangle instances to `scene['objects']` list
+**Triangle class** implements Möller-Trumbore algorithm for fast intersection:
+- Supports smooth shading (interpolated vertex normals)
+- Flat shading fallback if normals not provided
+- UV coordinate interpolation using barycentric coordinates
+- Self-intersection prevention with `t > 0.001`
+
+**Usage pattern**:
+```python
+from model import OBJModel
+from MathLib import TranslationMatrix, ScaleMatrix, RotationMatrix
+
+obj = OBJModel('assets/model.obj')
+transform = TranslationMatrix(x, y, z) @ ScaleMatrix(sx, sy, sz) @ RotationMatrix(pitch, yaw, roll)
+triangles = obj.to_triangles(material, transform)
+scene['objects'].extend(triangles)  # Add all triangles to scene
+```
 
 ## Critical Developer Workflows
 
@@ -69,6 +89,12 @@ python render_preview.py  # 160x120, ~5-10 seconds
 
 # Scene render (defined in scene.py)
 python raytracer_scene.py  # Resolution varies, check scene config
+
+# Test new primitives
+python test_primitives.py  # 480x270, tests Capsule/Cone/Disk/Torus
+
+# Test OBJ integration
+python test_obj.py  # 640x360, renders cube.obj with triangles
 
 # Custom scene (edit first, then run)
 python raytracer.py  # Main entry point
@@ -108,12 +134,37 @@ Always render previews at low resolution (960x540 or lower) before final 1920x10
 - HDR envmaps at 1024×512 are sufficient (4K maps increase memory and sampling time)
 - For >1000 triangles in OBJ models, consider spatial acceleration (BVH), but not required for grading
 
+### Multi-Light System ✅
+The raytracer supports multiple simultaneous lights with automatic shadow calculation:
+
+**Light Types** (in `lighting.py`):
+- **DirectionalLight**: Infinite parallel rays (sun), no attenuation, shadow rays to infinity
+- **PointLight**: Omnidirectional from position, quadratic attenuation `I/(c + l*d + q*d²)`
+- **SpotLight**: Cone-shaped with direction, cutoff angle, and smooth falloff
+- **AmbientLight**: Uniform global illumination (no direction)
+
+**Usage**:
+```python
+from lighting import create_pikmin_lighting, create_default_lighting
+
+lighting = create_pikmin_lighting()  # Pre-configured 4 lights for scene
+scene = {
+    'objects': [...],
+    'lights': lighting['lights'],      # List of Light objects
+    'ambient': lighting['ambient'],     # AmbientLight instance
+}
+```
+
+**Shadow Rays**: Automatically calculated for each light. For directional lights, checks to infinity. For point/spot lights, only checks up to light distance to prevent false shadows.
+
 ## Common Pitfalls
 - **Color Buffer Indexing**: BMP_Writer expects `colorBuffer[x][y]`, not `[y][x]`
 - **Normal Direction**: Always normalize and ensure they point outward; reversed normals cause black surfaces
 - **HDR Clamping**: Don't clamp HDR values until final output; use tone mapping for realistic bright areas
 - **Material Reflection**: Metal materials combine local shading with reflected rays; weigh by reflectivity
 - **Refraction Edge Cases**: Handle total internal reflection (when `refractVector` fails, use pure reflection)
+- **Shadow Bias**: Use `point + normal * 0.001` offset for shadow ray origin to prevent self-intersection
+- **Light Attenuation**: Point/Spot lights use `(constant, linear, quadratic)` tuple for falloff control
 
 ## External Dependencies
 - `numpy` for vector math (all vectors are `np.array`)

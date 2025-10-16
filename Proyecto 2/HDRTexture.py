@@ -124,12 +124,21 @@ class HDRTexture:
         Equirectangular mapping: u = atan2(z,x)/(2pi)+0.5, v = acos(y)/pi
         """
         x, y, z = direction
+        
+        # Check for NaN values
+        if math.isnan(x) or math.isnan(y) or math.isnan(z):
+            return (0.5, 0.5, 0.5)  # Fallback gray
+        
         # Clamp y to valid range for acos
         y = max(-1.0, min(1.0, y))
         
         # Calculate spherical coordinates
         u = (math.atan2(z, x) / (2.0 * math.pi)) + 0.5
         v = math.acos(y) / math.pi
+        
+        # Check for NaN in spherical coords
+        if math.isnan(u) or math.isnan(v):
+            return (0.5, 0.5, 0.5)  # Fallback gray
         
         # Clamp and wrap coordinates to [0, 1)
         u = u % 1.0
