@@ -38,7 +38,7 @@ skyboxTextures = ["skybox/right.jpg",
 rend.CreateSkybox(skyboxTextures)
 
 
-faceModel = Model("models/model.obj")
+faceModel = Model("models/iron_golem.obj")
 faceModel.AddTexture("textures/model.bmp")
 faceModel.AddTexture("textures/lava_cracks.jpg")
 faceModel.position.z = -5
