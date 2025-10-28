@@ -24,7 +24,7 @@ rend = Renderer(screen)
 rend.pointLight = glm.vec3(1,1,1)
 
 currVertexShader = vertex_shader
-currFragmentShader = fragment_shader
+currFragmentShader = rim_lighting_shader
 
 rend.SetShaders(currVertexShader, currFragmentShader)
 
@@ -39,9 +39,11 @@ rend.CreateSkybox(skyboxTextures)
 
 
 faceModel = Model("models/iron_golem.obj")
-faceModel.AddTexture("textures/model.bmp")
-faceModel.AddTexture("textures/lava_cracks.jpg")
-faceModel.position.z = -5
+# Texture will be loaded automatically from MTL file
+faceModel.AddTexture("textures/lava_cracks.jpg")  # Additional texture for effects
+faceModel.position.y = -10
+faceModel.position.z = -45  # Moved back for better view
+faceModel.scale = glm.vec3(0.8, 0.8, 0.8)  # Slightly smaller for better framing
 
 rend.scene.append(faceModel)
 
@@ -64,19 +66,23 @@ while isRunning:
 				rend.ToggleFilledMode()
 
 			if event.key == pygame.K_1:
-				currFragmentShader = fragment_shader
+				currFragmentShader = rim_lighting_shader
 				rend.SetShaders(currVertexShader, currFragmentShader)
 
 			if event.key == pygame.K_2:
-				currFragmentShader = toon_shader
+				currFragmentShader = fresnel_metallic_shader
 				rend.SetShaders(currVertexShader, currFragmentShader)
 
 			if event.key == pygame.K_3:
-				currFragmentShader = negative_shader
+				currFragmentShader = procedural_patterns_shader
 				rend.SetShaders(currVertexShader, currFragmentShader)
 
 			if event.key == pygame.K_4:
-				currFragmentShader = magma_shader
+				currFragmentShader = gooch_shading_shader
+				rend.SetShaders(currVertexShader, currFragmentShader)
+
+			if event.key == pygame.K_5:
+				currFragmentShader = psychedelic_warp_shader
 				rend.SetShaders(currVertexShader, currFragmentShader)
 
 
