@@ -1,6 +1,6 @@
 # GLSL - Original Fragment Shaders Collection
 
-# Shader 1: Glitch Holographic - Crazy digital glitch effect with chromatic aberration
+# Shader 1: Glitch 
 rim_lighting_shader = '''
 #version 330 core
 
@@ -69,7 +69,7 @@ void main()
 '''
 
 
-# Shader 2: Plasma Fire - Intense animated plasma/fire effect with color gradients
+# Shader 2:  
 fresnel_metallic_shader = '''
 #version 330 core
 
@@ -141,7 +141,7 @@ void main()
 '''
 
 
-# Shader 3: Procedural Patterns - Creates animated stripe/wave patterns
+# Shader 3: Procedural Patterns 
 procedural_patterns_shader = '''
 #version 330 core
 
@@ -182,7 +182,7 @@ void main()
 '''
 
 
-# Shader 4: Gooch Shading - Non-photorealistic technical illustration style
+# Shader 4:
 gooch_shading_shader = '''
 #version 330 core
 
@@ -225,7 +225,7 @@ void main()
 '''
 
 
-# Shader 5: PSYCHEDELIC REALITY WARP - Complete mind-bending chaos!
+# Shader 5: PSYCHEDELIC 
 psychedelic_warp_shader = '''
 #version 330 core
 
