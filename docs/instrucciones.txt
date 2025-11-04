@@ -1,0 +1,13 @@
+El objetivo de este laboratorio es que los alumnos hagan la implementación de un visualizador de modelos en OpenGL. Para obtener la nota completa de ésta tarea deben entregar lo siguiente:
+
+Código fuente de un renderer simple usando OpenGL.
+Implementar el código necesario para leer tres archivos OBJ y renderizarlos en la pantalla, con su textura correspondiente.
+Implementar input en el teclado para cambiar de un modelo a otro.
+Solo un modelo debe ser visible a la vez.
+Los shaders del laboratorio anterior deben funcionar con todos los modelos, y se debe poder cambiar entre ellos.
+Implementar el código necesario para la renderización de un skybox/envmap. No puede ser el usado en clase.
+Implementar el uso y los siguientes movimientos de la cámara en perspectiva:
+Movimiento circular al rededor del modelo, enfocado siempre en el modelo.
+Movimiento de la cámara hacia arriba y hacia abajo, pero siempre enfocado en el modelo. Tiene que tener un límite.
+Zoom In y Zoom out de la cámara, con un límite de cuanto se puede acercar o cuanto se puede alejar.
+Cada uno de los movimientos de cámara se pueden llevar a cabo con input del mouse y del teclado.
