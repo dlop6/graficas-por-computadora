@@ -24,8 +24,11 @@ class Renderer(object):
         self.ToggleFilledMode()
 
         self.activeShader = None
+<<<<<<< HEAD
         self.active_postProcessing_Shader = None
 
+=======
+>>>>>>> Lab-9
 
         self.skybox = None
 
@@ -36,8 +39,11 @@ class Renderer(object):
         self.value = 0.0;
         self.elapsedTime = 0.0;
 
+<<<<<<< HEAD
         self.CreateFrameBuffer()
 
+=======
+>>>>>>> Lab-9
 
 
     def CreateSkybox(self, textureList):
@@ -45,6 +51,7 @@ class Renderer(object):
         self.skybox.cameraRef = self.camera
 
 
+<<<<<<< HEAD
     def CreateFrameBuffer(self):
         # Crear frameBuffer
         self.FBO = glGenFramebuffers(1)
@@ -71,6 +78,8 @@ class Renderer(object):
 
 
 
+=======
+>>>>>>> Lab-9
     def ToggleFilledMode(self):
         self.filledMode = not self.filledMode
 
@@ -90,6 +99,7 @@ class Renderer(object):
             self.activeShader = None
 
 
+<<<<<<< HEAD
     def SetPostProcessingShaders(self, vertexShader, fragmentShader):
         if vertexShader is not None and fragmentShader is not None:
             self.active_postProcessing_Shader = compileProgram( compileShader(vertexShader, GL_VERTEX_SHADER),
@@ -102,6 +112,9 @@ class Renderer(object):
         if self.active_postProcessing_Shader is not None:
             glBindFramebuffer(GL_FRAMEBUFFER, self.FBO)
 
+=======
+    def Render(self):
+>>>>>>> Lab-9
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT )
 
         self.camera.Update()
@@ -139,6 +152,7 @@ class Renderer(object):
 
             obj.Render()
 
+<<<<<<< HEAD
 
         if self.active_postProcessing_Shader is not None:
             glBindFramebuffer(GL_FRAMEBUFFER, 0)
@@ -163,3 +177,5 @@ class Renderer(object):
 
             glEnable(GL_DEPTH_TEST)
 
+=======
+>>>>>>> Lab-9
