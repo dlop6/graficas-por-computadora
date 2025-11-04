@@ -34,15 +34,15 @@ class Obj(object):
 			# la informacion en el contenedor correcto
 
 			if prefix == "v": # Vertices
-				vert = list(map(float,value.split(" ")))
+				vert = [float(x) for x in value.split() if x]
 				self.vertices.append(vert)
 
 			elif prefix == "vt": # Coordenadas de textura
-				vts = list(map(float,value.split(" ")))
+				vts = [float(x) for x in value.split() if x]
 				self.texCoords.append([vts[0],vts[1]])
 
 			elif prefix == "vn": # Normales
-				norm = list(map(float,value.split(" ")))
+				norm = [float(x) for x in value.split() if x]
 				self.normals.append(norm)
 
 			elif prefix == "mtllib":
@@ -56,9 +56,9 @@ class Obj(object):
 
 			elif prefix == "f": # Caras
 				face = []
-				verts = value.split(" ")
+				verts = [v for v in value.split() if v]
 				for vert in verts:
-					vert = list(map(int, vert.split("/")))
+					vert = [int(x) if x else 0 for x in vert.split("/")]
 					face.append(vert)
 				self.faces.append(face)
 				self.faceMaterials.append(currentMat)

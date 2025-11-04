@@ -21,7 +21,8 @@ clock = pygame.time.Clock()
 
 
 rend = Renderer(screen)
-rend.pointLight = glm.vec3(1,1,1)
+rend.pointLight = glm.vec3(0, 5, -5)  # Light above and in front of models
+rend.ambientLight = 0.4  # More ambient light to see models better
 
 currVertexShader = vertex_shader
 currFragmentShader = rim_lighting_shader
@@ -38,14 +39,35 @@ skyboxTextures = ["skybox/right.jpg",
 rend.CreateSkybox(skyboxTextures)
 
 
-faceModel = Model("models/iron_golem.obj")
-# Texture will be loaded automatically from MTL file
-faceModel.AddTexture("textures/lava_cracks.jpg")  # Additional texture for effects
-faceModel.position.y = -10
-faceModel.position.z = -45  # Moved back for better view
-faceModel.scale = glm.vec3(0.8, 0.8, 0.8)  # Slightly smaller for better framing
+# Load all three models
+print("\n" + "="*60)
+print("LOADING MODELS...")
+print("="*60)
 
-rend.scene.append(faceModel)
+ironGolemModel = Model("models/iron_golem_clean/iron_golem.obj")
+ironGolemModel.AddTexture("textures/lava_cracks.jpg")  # Additional texture for effects
+ironGolemModel.position = glm.vec3(0, 0, -10)  # Closer and centered
+ironGolemModel.scale = glm.vec3(2.0, 2.0, 2.0)  # Bigger
+print(f"✓ Iron Golem loaded - Vertices: {len(ironGolemModel.objFile.vertices)}, Faces: {len(ironGolemModel.objFile.faces)}")
+
+trexModel = Model("models/trex/trex.obj")
+trexModel.position = glm.vec3(0, -5, -15)  # Closer
+trexModel.scale = glm.vec3(0.05, 0.05, 0.05)  # T-Rex is usually very large, scale down
+print(f"✓ T-Rex loaded - Vertices: {len(trexModel.objFile.vertices)}, Faces: {len(trexModel.objFile.faces)}")
+
+titanModel = Model("models/titan_clean/titan.obj")
+titanModel.position = glm.vec3(0, 0, -10)  # Closer and centered
+titanModel.scale = glm.vec3(3.0, 3.0, 3.0)  # Bigger
+print(f"✓ Titan loaded - Vertices: {len(titanModel.objFile.vertices)}, Faces: {len(titanModel.objFile.faces)}")
+
+# List of all models
+models = [ironGolemModel, trexModel, titanModel]
+currentModelIndex = 0
+
+# Add only the current model to the scene
+rend.scene.append(models[currentModelIndex])
+print(f"\nStarting with: Iron Golem (Model 1/3)")
+print("="*60 + "\n")
 
 isRunning = True
 
@@ -64,6 +86,43 @@ while isRunning:
 		elif event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_f:
 				rend.ToggleFilledMode()
+
+			# Model switching (M, N, B keys)
+			if event.key == pygame.K_m:
+				# Remove current model from scene
+				rend.scene.remove(models[currentModelIndex])
+				# Switch to Iron Golem
+				currentModelIndex = 0
+				rend.scene.append(models[currentModelIndex])
+				print(f"\n========================================")
+				print(f"SWITCHED TO: Iron Golem (Model 1/3)")
+				print(f"Position: {models[currentModelIndex].position}")
+				print(f"Scale: {models[currentModelIndex].scale}")
+				print(f"========================================\n")
+
+			if event.key == pygame.K_n:
+				# Remove current model from scene
+				rend.scene.remove(models[currentModelIndex])
+				# Switch to T-Rex
+				currentModelIndex = 1
+				rend.scene.append(models[currentModelIndex])
+				print(f"\n========================================")
+				print(f"SWITCHED TO: T-Rex (Model 2/3)")
+				print(f"Position: {models[currentModelIndex].position}")
+				print(f"Scale: {models[currentModelIndex].scale}")
+				print(f"========================================\n")
+
+			if event.key == pygame.K_b:
+				# Remove current model from scene
+				rend.scene.remove(models[currentModelIndex])
+				# Switch to Titan
+				currentModelIndex = 2
+				rend.scene.append(models[currentModelIndex])
+				print(f"\n========================================")
+				print(f"SWITCHED TO: Titan (Model 3/3)")
+				print(f"Position: {models[currentModelIndex].position}")
+				print(f"Scale: {models[currentModelIndex].scale}")
+				print(f"========================================\n")
 
 			if event.key == pygame.K_1:
 				currFragmentShader = rim_lighting_shader
@@ -142,7 +201,8 @@ while isRunning:
 
 
 
-	faceModel.rotation.y += 45 * deltaTime
+	# Rotate the current model
+	models[currentModelIndex].rotation.y += 45 * deltaTime
 
 
 	rend.Render()
