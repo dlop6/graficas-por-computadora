@@ -16,7 +16,7 @@ class Camera(object):
 
 		self.CreateProjectionMatrix(60, 0.1, 1000)
 
-	self.usingLookAt = False
+		self.usingLookAt = False
 
 	def Update(self):
 		# M = T * R
