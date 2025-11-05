@@ -1,17 +1,27 @@
 
+<<<<<<< HEAD
+=======
 import os
 
 
+>>>>>>> Lab-9
 class Obj(object):
 	def __init__(self, filename):
 		# Asumiendo que el archivo es un formato .obj
 		with open(filename, "r") as file:
 			lines = file.read().splitlines()
+<<<<<<< HEAD
+			
+=======
 
+>>>>>>> Lab-9
 		self.vertices = []
 		self.texCoords = []
 		self.normals = []
 		self.faces = []
+<<<<<<< HEAD
+		
+=======
 		# material name per face (None if no material)
 		self.faceMaterials = []
 		# materials parsed from .mtl (name -> dict of properties)
@@ -19,6 +29,7 @@ class Obj(object):
 
 		currentMat = None
 
+>>>>>>> Lab-9
 		for line in lines:
 			# Si la linea no cuenta con un prefijo y un valor,
 			# seguimos a la siguiente la linea
@@ -29,6 +40,24 @@ class Obj(object):
 				prefix, value = line.split(" ", 1)
 			except:
 				continue
+<<<<<<< HEAD
+			
+			# Dependiendo del prefijo, parseamos y guardamos
+			# la informacion en el contenedor correcto
+			
+			if prefix == "v": # Vertices
+				vert = list(map(float,value.split(" ")))
+				self.vertices.append(vert)
+				
+			elif prefix == "vt": # Coordenadas de textura
+				vts = list(map(float,value.split(" ")))
+				self.texCoords.append([vts[0],vts[1]])
+				
+			elif prefix == "vn": # Normales
+				norm = list(map(float,value.split(" ")))
+				self.normals.append(norm)
+				
+=======
 
 			# Dependiendo del prefijo, parseamos y guardamos
 			# la informacion en el contenedor correcto
@@ -54,12 +83,16 @@ class Obj(object):
 			elif prefix == "usemtl":
 				currentMat = value.strip()
 
+>>>>>>> Lab-9
 			elif prefix == "f": # Caras
 				face = []
 				verts = [v for v in value.split() if v]
 				for vert in verts:
 					vert = [int(x) if x else 0 for x in vert.split("/")]
 					face.append(vert)
+<<<<<<< HEAD
+				self.faces.append(face)                                                                                                                                                                                                                                                                                                                                                                                           
+=======
 				self.faces.append(face)
 				self.faceMaterials.append(currentMat)
 
@@ -86,3 +119,4 @@ class Obj(object):
 					mats[current]['map_Kd'] = val.strip()
 				# ignore other MTL properties for now
 		return mats
+>>>>>>> Lab-9

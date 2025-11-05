@@ -24,6 +24,11 @@ class Renderer(object):
         self.ToggleFilledMode()
 
         self.activeShader = None
+<<<<<<< HEAD
+        self.active_postProcessing_Shader = None
+
+=======
+>>>>>>> Lab-9
 
         self.skybox = None
 
@@ -34,6 +39,11 @@ class Renderer(object):
         self.value = 0.0;
         self.elapsedTime = 0.0;
 
+<<<<<<< HEAD
+        self.CreateFrameBuffer()
+
+=======
+>>>>>>> Lab-9
 
 
     def CreateSkybox(self, textureList):
@@ -41,6 +51,35 @@ class Renderer(object):
         self.skybox.cameraRef = self.camera
 
 
+<<<<<<< HEAD
+    def CreateFrameBuffer(self):
+        # Crear frameBuffer
+        self.FBO = glGenFramebuffers(1)
+        glBindFramebuffer(GL_FRAMEBUFFER, self.FBO)
+
+        # Crear la textura del framebuffer
+        self.FBOTexture = glGenTextures(1)
+        glBindTexture(GL_TEXTURE_2D, self.FBOTexture)
+        glTexImage2D(GL_TEXTURE_2D,0, GL_RGBA, self.width, self.height, 0, GL_RGBA, GL_UNSIGNED_BYTE,None)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, self.FBOTexture, 0)
+
+        # Create depthTexture/Z buffer
+        self.depthTexture = glGenTextures(1)
+        glBindTexture(GL_TEXTURE_2D, self.depthTexture)
+        glTexImage2D(GL_TEXTURE_2D,0, GL_DEPTH_COMPONENT24, self.width, self.height, 0, GL_DEPTH_COMPONENT, GL_FLOAT ,None)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, self.depthTexture, 0)
+
+        # Unbind
+        glBindFramebuffer(GL_FRAMEBUFFER, 0)
+
+
+
+=======
+>>>>>>> Lab-9
     def ToggleFilledMode(self):
         self.filledMode = not self.filledMode
 
@@ -60,7 +99,22 @@ class Renderer(object):
             self.activeShader = None
 
 
+<<<<<<< HEAD
+    def SetPostProcessingShaders(self, vertexShader, fragmentShader):
+        if vertexShader is not None and fragmentShader is not None:
+            self.active_postProcessing_Shader = compileProgram( compileShader(vertexShader, GL_VERTEX_SHADER),
+                                                compileShader(fragmentShader, GL_FRAGMENT_SHADER) )
+        else:
+            self.active_postProcessing_Shader = None
+
+
     def Render(self):
+        if self.active_postProcessing_Shader is not None:
+            glBindFramebuffer(GL_FRAMEBUFFER, self.FBO)
+
+=======
+    def Render(self):
+>>>>>>> Lab-9
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT )
 
         self.camera.Update()
@@ -98,3 +152,30 @@ class Renderer(object):
 
             obj.Render()
 
+<<<<<<< HEAD
+
+        if self.active_postProcessing_Shader is not None:
+            glBindFramebuffer(GL_FRAMEBUFFER, 0)
+            glClear(GL_COLOR_BUFFER_BIT)
+
+            glDisable(GL_DEPTH_TEST)
+
+            glUseProgram(self.active_postProcessing_Shader)
+
+            glActiveTexture(GL_TEXTURE0)
+            glBindTexture(GL_TEXTURE_2D, self.FBOTexture)
+
+            glActiveTexture(GL_TEXTURE1)
+            glBindTexture(GL_TEXTURE_2D, self.depthTexture)
+
+            glUniform1i( glGetUniformLocation(self.active_postProcessing_Shader, "frameBuffer"), 0)
+            glUniform1i( glGetUniformLocation(self.active_postProcessing_Shader, "depthTexture"), 1)
+
+            glUniform1f( glGetUniformLocation(self.active_postProcessing_Shader, "time"), self.elapsedTime )
+
+            glDrawArrays(GL_QUADS, 0, 4)
+
+            glEnable(GL_DEPTH_TEST)
+
+=======
+>>>>>>> Lab-9

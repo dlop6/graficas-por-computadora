@@ -1,29 +1,48 @@
+<<<<<<< HEAD
+from OpenGL.GL import *
+=======
 from OpenGL.GL import (glGenTextures, glBindTexture, glTexImage2D, glGenerateMipmap,
 					   glActiveTexture, glDrawArrays, glDisableVertexAttribArray,
 					   GL_TEXTURE_2D, GL_RGB, GL_UNSIGNED_BYTE, GL_TEXTURE0, GL_TRIANGLES)
+>>>>>>> Lab-9
 from obj import Obj
 from buffer import Buffer
 
 import glm
+<<<<<<< HEAD
+=======
 import os
+>>>>>>> Lab-9
 
 import pygame
 
 class Model(object):
 	def __init__(self, filename):
 		self.objFile = Obj(filename)
+<<<<<<< HEAD
+=======
 		# base path for resolving material texture paths
 		self.basePath = os.path.dirname(filename)
+>>>>>>> Lab-9
 
 		self.position = glm.vec3(0,0,0)
 		self.rotation = glm.vec3(0,0,0)
 		self.scale = glm.vec3(1,1,1)
 
+<<<<<<< HEAD
+		self.BuildBuffers()
+
+		self.textures = []
+
+		self.visible = True
+
+=======
 		self.textures = []
 		# submeshes: list of dicts {posBuffer, texBuffer, normalsBuffer, vertexCount, material, textureID}
 		self.submeshes = []
 
 		self.BuildBuffers()
+>>>>>>> Lab-9
 
 	def GetModelMatrix(self):
 
@@ -44,6 +63,59 @@ class Model(object):
 
 	def BuildBuffers(self):
 
+<<<<<<< HEAD
+		positions = []
+		texCoords = []
+		normals = []
+
+		self.vertexCount = 0
+
+		for face in self.objFile.faces:
+
+			facePositions = []
+			faceTexCoords = []
+			faceNormals = []
+
+			for i in range(len(face)):
+				facePositions.append( self.objFile.vertices [ face[i][0] - 1 ] )
+				faceTexCoords.append( self.objFile.texCoords[ face[i][1] - 1 ] )
+				faceNormals.append( self.objFile.normals[ face[i][2] - 1 ] )
+
+
+			for value in facePositions[0]: positions.append(value)
+			for value in facePositions[1]: positions.append(value)
+			for value in facePositions[2]: positions.append(value)
+
+			for value in faceTexCoords[0]: texCoords.append(value)
+			for value in faceTexCoords[1]: texCoords.append(value)
+			for value in faceTexCoords[2]: texCoords.append(value)
+
+			for value in faceNormals[0]: normals.append(value)
+			for value in faceNormals[1]: normals.append(value)
+			for value in faceNormals[2]: normals.append(value)
+
+			self.vertexCount += 3
+
+			if len(face) == 4:
+				for value in facePositions[0]: positions.append(value)
+				for value in facePositions[2]: positions.append(value)
+				for value in facePositions[3]: positions.append(value)
+
+				for value in faceTexCoords[0]: texCoords.append(value)
+				for value in faceTexCoords[2]: texCoords.append(value)
+				for value in faceTexCoords[3]: texCoords.append(value)
+
+				for value in faceNormals[0]: normals.append(value)
+				for value in faceNormals[2]: normals.append(value)
+				for value in faceNormals[3]: normals.append(value)
+
+				self.vertexCount += 3
+
+
+		self.posBuffer = Buffer(positions)
+		self.texCoordsBuffer = Buffer(texCoords)
+		self.normalsBuffer = Buffer(normals)
+=======
 		# Group faces by material (material can be None)
 		groups = {}
 		for i, face in enumerate(self.objFile.faces):
@@ -117,6 +189,7 @@ class Model(object):
 						sub['textureID'] = self._load_texture(texpath)
 
 			self.submeshes.append(sub)
+>>>>>>> Lab-9
 
 
 	def AddTexture(self, filename):
@@ -141,6 +214,14 @@ class Model(object):
 		self.textures.append(texture)
 
 
+<<<<<<< HEAD
+	def Render(self):
+
+		if not self.visible:
+			return
+
+		# Dar la textura
+=======
 	def _load_texture(self, filename):
 		"""Load a texture and return its OpenGL id (does not add to textures list)."""
 		textureSurface = pygame.image.load(filename)
@@ -187,10 +268,20 @@ class Model(object):
 			return
 
 		# Fallback: legacy single-texture model (kept for compatibility)
+>>>>>>> Lab-9
 		for i in range(len(self.textures)):
 			glActiveTexture(GL_TEXTURE0 + i)
 			glBindTexture(GL_TEXTURE_2D, self.textures[i])
 
+<<<<<<< HEAD
+
+		self.posBuffer.Use(0, 3)
+		self.texCoordsBuffer.Use(1, 2)
+		self.normalsBuffer.Use(2, 3)
+
+
+		glDrawArrays(GL_TRIANGLES, 0, self.vertexCount)
+=======
 		# legacy buffers (if present)
 		if hasattr(self, 'posBuffer'):
 			self.posBuffer.Use(0, 3)
@@ -201,6 +292,7 @@ class Model(object):
 
 		if hasattr(self, 'vertexCount'):
 			glDrawArrays(GL_TRIANGLES, 0, self.vertexCount)
+>>>>>>> Lab-9
 
 		glDisableVertexAttribArray(0)
 		glDisableVertexAttribArray(1)
