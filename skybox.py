@@ -123,16 +123,18 @@ class Skybox(object):
 	def Render(self):
 		if self.shaders == None:
 			return
-		
+
 		glUseProgram(self.shaders)
-		
+
 		if self.cameraRef is not None:
 			glUniformMatrix4fv( glGetUniformLocation(self.shaders, "viewMatrix"),
 								1, GL_FALSE, glm.value_ptr( self.cameraRef.viewMatrix) )
-			
+
 			glUniformMatrix4fv( glGetUniformLocation(self.shaders, "projectionMatrix"),
 								1, GL_FALSE, glm.value_ptr( self.cameraRef.projectionMatrix) )
-		
+
+		# renderizar el skybox sin escribir al depth buffer pero usando depth test
+		glDepthFunc(GL_LEQUAL)  # permite que pase cuando z <= depth buffer
 		glDepthMask(GL_FALSE)
 		
 		glBindTexture(GL_TEXTURE_CUBE_MAP, self.texture)
@@ -155,8 +157,9 @@ class Skybox(object):
 		
 		
 		glDrawArrays(GL_TRIANGLES, 0, 36)
-		
+
 		glDisableVertexAttribArray(0)
 
 		glDepthMask(GL_TRUE)
+		glDepthFunc(GL_LESS)  # restaurar la función de profundidad normal para los modelos
 		
