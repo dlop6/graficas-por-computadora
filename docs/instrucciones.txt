@@ -1,13 +1,21 @@
-El objetivo de este laboratorio es que los alumnos hagan la implementación de un visualizador de modelos en OpenGL. Para obtener la nota completa de ésta tarea deben entregar lo siguiente:
+El objetivo de éste proyecto es demostrar los conocimientos adquiridos a lo largo del semestre.
 
-Código fuente de un renderer simple usando OpenGL.
-Implementar el código necesario para leer tres archivos OBJ y renderizarlos en la pantalla, con su textura correspondiente.
-Implementar input en el teclado para cambiar de un modelo a otro.
-Solo un modelo debe ser visible a la vez.
-Los shaders del laboratorio anterior deben funcionar con todos los modelos, y se debe poder cambiar entre ellos.
-Implementar el código necesario para la renderización de un skybox/envmap. No puede ser el usado en clase.
-Implementar el uso y los siguientes movimientos de la cámara en perspectiva:
-Movimiento circular al rededor del modelo, enfocado siempre en el modelo.
-Movimiento de la cámara hacia arriba y hacia abajo, pero siempre enfocado en el modelo. Tiene que tener un límite.
-Zoom In y Zoom out de la cámara, con un límite de cuanto se puede acercar o cuanto se puede alejar.
-Cada uno de los movimientos de cámara se pueden llevar a cabo con input del mouse y del teclado.
+Los alumnos deben entregar un Diorama creado en base al renderer de OpenGL que se trabajó en clase. Un diorama es "un tipo de maqueta que muestra figuras humanas, vehículos, animales o incluso seres imaginarios como punto focal de su composición, presentados dentro de un entorno y con el propósito de representar una escena". En otras palabras, es una simple presentación de una escena 3D.
+
+La nota máxima es de 100 puntos. Se entregarán los siguientes puntos por cada uno de los objetivos que se cumplan. Pueden escoger los objetivos que quieran. No hay puntos extra.
+
+25 puntos máximo por modelos cargados.
+5 puntos cada modelo, máximo de 5 modelos calificados pero pueden agregar la cantidad de modelos que quieran.
+Cada modelo tiene que estar posicionado en la escena de manera que tenga sentido.
+Entre estos modelos puede contar el piso o lo que sea que usen como base del diorama.
+30 puntos por movimiento de cámara.
+10 pts, incluir los tres movimientos de cámara del Laboratorio 10 (zoom, orbitar, desplazamiento vertical).
+5 pts, debe funcionar tanto con el mouse como con el teclado.
+15 pts, usando input determinado por usted, que la cámara cambie su punto de origen/vista a cada uno de los modelos cargados.
+0 - 30 puntos según uso creativo de shaders (iluminación compleja, usar input para variar algún valor dentro del shader, Geometry Shaders, deformación, etc...)
+Cada modelo cargado debe tener una combinación de shaders diferente.
+Se pueden usar los shaders creados en clase pero no se toman en cuenta para la puntuación.
+5 puntos por el Skybox/Cubemap.
+0 - 25 puntos según características extras que el alumno agregue al programa (menús, música o efectos de sonido, post processing, etc)
+0 - 10 puntos según creatividad y estética del diorama creado.
+Incluir en los comentarios de la entrega o en el ReadMe del repo alguna descripción del Input necesario para cambiar de vista de modelos o de cualquier otra acción que el usuario pueda llevar a cabo. Pueden usar texturas o modelos que encuentren en internet. Se les recuerda también que hay bastante documentación en línea en caso de que necesiten más información acerca de OpenGL. En caso de utilizar herramientas de IA, adjuntar también con su entrega la conversación y una explicación de cómo lo implementaron en su solución. Se les anima a compartir una muestra en el canal ShowOff del Discord.
