@@ -14,6 +14,9 @@ class Renderer(object):
 
         glEnable(GL_DEPTH_TEST)
         glViewport(0,0, self.width, self.height)
+        # Core profiles require a VAO bound before setting up vertex attribs
+        self.VAO = glGenVertexArrays(1)
+        glBindVertexArray(self.VAO)
 
         self.camera = Camera(self.width, self.height)
 
@@ -69,8 +72,8 @@ class Renderer(object):
         self.filledMode = not self.filledMode
 
         if self.filledMode:
-            glEnable(GL_CULL_FACE)
-            glPolygonMode(GL_FRONT, GL_FILL)
+            glDisable(GL_CULL_FACE)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
         else:
             glDisable(GL_CULL_FACE)
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
@@ -92,6 +95,9 @@ class Renderer(object):
 
 
     def Render(self):
+        # Ensure VAO is bound for attribute setup in Buffers (core profiles require this)
+        glBindVertexArray(self.VAO)
+
         if self.active_postProcessing_Shader is not None:
             glBindFramebuffer(GL_FRAMEBUFFER, self.FBO)
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT )

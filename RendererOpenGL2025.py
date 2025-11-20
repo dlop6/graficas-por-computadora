@@ -9,12 +9,23 @@ from buffer import Buffer
 from model import Model
 from vertexShaders import *
 from fragmentShaders import *
-from OpenGL.GL import glDisable, GL_CULL_FACE
+from OpenGL.GL import (
+    glDisable,
+    glDisableVertexAttribArray,
+    glDrawArrays,
+    glPolygonMode,
+    GL_CULL_FACE,
+    GL_FRONT_AND_BACK,
+    GL_FILL,
+    GL_TRIANGLES,
+)
 
 width = 960
 height = 540
 
 deltaTime = 0.0
+
+DEBUG_TRIANGLE = True  # Fase A: pipeline mínimo
 
 
 screen = pygame.display.set_mode((width, height), pygame.DOUBLEBUF | pygame.OPENGL)
@@ -22,8 +33,8 @@ clock = pygame.time.Clock()
 
 
 rend = Renderer(screen)
-rend.pointLight = glm.vec3(0, 5, -5)  # Light above and in front of models
-rend.ambientLight = 0.4  # More ambient light to see models better
+rend.pointLight = glm.vec3(0, 8, -10)  # Light above and in front of models
+rend.ambientLight = 0.6  # More ambient light to see models better
 
 # Ensure back-face culling is disabled so models with arbitrary winding are visible
 glDisable(GL_CULL_FACE)
@@ -31,66 +42,152 @@ glDisable(GL_CULL_FACE)
 # Make sure filled mode is ON (not wireframe)
 if not rend.filledMode:
     rend.ToggleFilledMode()
+glDisable(GL_CULL_FACE)
+# Ensure polygon mode is set for both faces (defensive)
+glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
 currVertexShader = vertex_shader
-currFragmentShader = rim_lighting_shader
+# start with a calmer shader to avoid neon artifacts on untextured city
+basic_vertex_debug = """
+#version 330 core
+layout (location = 0) in vec3 inPosition;
+uniform mat4 modelMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
+void main() {
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(inPosition, 1.0);
+}
+"""
+flat_color_shader = """
+#version 330 core
+out vec4 fragColor;
+void main() { fragColor = vec4(1.0, 0.2, 0.2, 1.0); }
+"""
+# start with simple flat shading for debugging visibility
+currVertexShader = basic_vertex_debug
+currFragmentShader = flat_color_shader
 
 rend.SetShaders(currVertexShader, currFragmentShader)
 
-skyboxTextures = ["skybox/right.jpg",
-				  "skybox/left.jpg",
-				  "skybox/top.jpg",
-				  "skybox/bottom.jpg",
-				  "skybox/front.jpg",
-				  "skybox/back.jpg"]
+# Disable skybox temporarily to debug model visibility
+# skyboxTextures = ["skybox/right.jpg",
+# 				  "skybox/left.jpg",
+# 				  "skybox/top.jpg",
+# 				  "skybox/bottom.jpg",
+# 				  "skybox/front.jpg",
+# 				  "skybox/back.jpg"]
+# rend.CreateSkybox(skyboxTextures)
 
-rend.CreateSkybox(skyboxTextures)
 
+# Scene setup: Amaryllis City + Pokémon (Fase 3)
+if DEBUG_TRIANGLE:
+	class DebugTriangle:
+		def __init__(self):
+			self.buffer = Buffer([
+				-0.5, -0.5, -2.0,
+				0.5, -0.5, -2.0,
+				0.0,  0.5, -2.0
+			])
+			self.position = glm.vec3(0,0,0)
+			self.rotation = glm.vec3(0,0,0)
+			self.scale = glm.vec3(1,1,1)
+		def GetModelMatrix(self):
+			return glm.mat4(1)
+		def Render(self):
+			self.buffer.Use(0,3)
+			glDrawArrays(GL_TRIANGLES, 0, 3)
+			glDisableVertexAttribArray(0)
 
-# Load all three models
-print("\n" + "="*60)
-print("LOADING MODELS...")
-print("="*60)
+	scene_models = [DebugTriangle()]
+	print("\n" + "="*60)
+	print("DEBUG TRIANGLE MODE")
+	print("="*60)
+	amaryllis = None
+else:
+	print("\n" + "="*60)
+	print("LOADING DIORAMA MODELS...")
+	print("="*60)
 
-ironGolemModel = Model("models/iron_golem_clean/iron_golem.obj")
-ironGolemModel.AddTexture("textures/lava_cracks.jpg")  # Additional texture for effects
-ironGolemModel.position = glm.vec3(0, 0, -80)  # Pushed further back
-ironGolemModel.scale = glm.vec3(3.0, 3.0, 3.0)  # Larger scale to be visible
-print(f"[OK] Iron Golem loaded - Vertices: {len(ironGolemModel.objFile.vertices)}, Faces: {len(ironGolemModel.objFile.faces)}")
+	scene_models = []
 
-trexModel = Model("models/trex/trex.obj")
-trexModel.position = glm.vec3(0, -5, -45)  # Pushed further back
-trexModel.scale = glm.vec3(0.08, 0.08, 0.08)  # Larger scale
-print(f"[OK] T-Rex loaded - Vertices: {len(trexModel.objFile.vertices)}, Faces: {len(trexModel.objFile.faces)}")
+	def center_and_place(model, target_height, world_pos):
+		verts = model.objFile.vertices
+		min_x = min(v[0] for v in verts)
+		max_x = max(v[0] for v in verts)
+		min_y = min(v[1] for v in verts)
+		max_y = max(v[1] for v in verts)
+		min_z = min(v[2] for v in verts)
+		max_z = max(v[2] for v in verts)
+		center = glm.vec3((min_x + max_x) / 2.0, (min_y + max_y) / 2.0, (min_z + max_z) / 2.0)
+		height = max_y - min_y if (max_y - min_y) != 0 else 1.0
+		scale_val = target_height / height
+		model.scale = glm.vec3(scale_val, scale_val, scale_val)
+		model.position = glm.vec3(world_pos) - center * scale_val
 
-titanModel = Model("models/titan_clean/titan.obj")
-titanModel.position = glm.vec3(0, 0, -35)  # Pushed further back
-titanModel.scale = glm.vec3(5.0, 5.0, 5.0)  # Large scale
-print(f"[OK] Titan loaded - Vertices: {len(titanModel.objFile.vertices)}, Faces: {len(titanModel.objFile.faces)}")
+	try:
+		bulbasaur = Model("models/bulbasur/Bulbasaur.obj")
+		center_and_place(bulbasaur, target_height=6.0, world_pos=glm.vec3(-4, 0, -20))
+		scene_models.append(bulbasaur)
+		print(f"[OK] Bulbasaur loaded ({len(bulbasaur.objFile.vertices)} verts)")
+	except Exception as e:
+		print(f"[ERR] Bulbasaur: {e}")
 
-# List of all models
-models = [ironGolemModel, trexModel, titanModel]
-currentModelIndex = 0
+	try:
+		charizard = Model("models/charizard/006 - Charizard/Charizard.obj")
+		center_and_place(charizard, target_height=7.0, world_pos=glm.vec3(4, 0, -18))
+		scene_models.append(charizard)
+		print(f"[OK] Charizard loaded ({len(charizard.objFile.vertices)} verts)")
+	except Exception as e:
+		print(f"[ERR] Charizard: {e}")
 
-# Add only the current model to the scene
-rend.scene.append(models[currentModelIndex])
-print(f"\nStarting with: Iron Golem (Model 1/3)")
-print(f"Scene has {len(rend.scene)} objects")
+	try:
+		eevee = Model("models/eve/Pokemon XY/Eevee/Eevee.obj")
+		center_and_place(eevee, target_height=5.0, world_pos=glm.vec3(-8, 0, -16))
+		scene_models.append(eevee)
+		print(f"[OK] Eevee loaded ({len(eevee.objFile.vertices)} verts)")
+	except Exception as e:
+		print(f"[ERR] Eevee: {e}")
+
+	try:
+		umbreon = Model("models/umbreon/Umbreon/UmbreonLowPoly.obj")
+		center_and_place(umbreon, target_height=4.0, world_pos=glm.vec3(10, 0, -14))
+		scene_models.append(umbreon)
+		print(f"[OK] Umbreon loaded ({len(umbreon.objFile.vertices)} verts)")
+	except Exception as e:
+		print(f"[ERR] Umbreon: {e}")
+
+	try:
+		pokeball = Model("models/pokeball/pokeball.obj")
+		center_and_place(pokeball, target_height=3.0, world_pos=glm.vec3(0, 0, -10))
+		scene_models.append(pokeball)
+		print(f"[OK] Pokeball loaded ({len(pokeball.objFile.vertices)} verts)")
+	except Exception as e:
+		print(f"[ERR] Pokeball: {e}")
+
+	# Temporarily skip the city to debug visibility
+	amaryllis = None
+
+# Add all loaded models to the renderer scene
+rend.scene.extend(scene_models)
+
+print(f"\nScene has {len(rend.scene)} objects")
 print(f"Filled mode: {rend.filledMode}")
 print("="*60 + "\n")
 
 # Orbital camera system variables
 cameraYaw = 0.0           # Horizontal rotation angle (degrees)
 cameraPitch = 0.0         # Vertical rotation angle (degrees)
-cameraDistance = 50.0     # Distance from target
-# la cámara debe apuntar al primer modelo (iron golem)
-cameraTarget = glm.vec3(ironGolemModel.position)
+cameraDistance = 5.0 if DEBUG_TRIANGLE else 20.0     # Distance from target
+# default target: first model if available, otherwise origin
+cameraTarget = glm.vec3(rend.scene[0].position) if rend.scene else glm.vec3(0, 0, 0)
 
 # Limits
 MIN_DISTANCE = 10.0
 MAX_DISTANCE = 100.0
 MIN_PITCH = -80.0
 MAX_PITCH = 80.0
+# Hard clamp to avoid camera going too far behind the city
+MAX_DISTANCE_CITY = 150.0
 
 # Mouse control
 mouseSensitivity = 0.2
@@ -105,6 +202,7 @@ def updateOrbitalCamera():
 	# Clamp values
 	cameraPitch = max(MIN_PITCH, min(MAX_PITCH, cameraPitch))
 	cameraDistance = max(MIN_DISTANCE, min(MAX_DISTANCE, cameraDistance))
+	cameraDistance = min(cameraDistance, MAX_DISTANCE_CITY)
 
 	# Convert to radians
 	yawRad = glm.radians(cameraYaw)
@@ -117,15 +215,26 @@ def updateOrbitalCamera():
 
 	rend.camera.position = glm.vec3(x, y, z)
 
-	# Use lookAt to make camera always look at target
-	rend.camera.viewMatrix = glm.lookAt(
-		rend.camera.position,
-		cameraTarget,
-		glm.vec3(0, 1, 0)  # Up vector
-	)
+	# Use lookAt to make camera always look at target (and mark usingLookAt)
+	rend.camera.LookAt(cameraTarget)
 
 # Initialize camera position
 updateOrbitalCamera()
+
+# Focus targets (skip city) and helper
+if DEBUG_TRIANGLE:
+	focus_targets = []
+else:
+	focus_targets = [bulbasaur, charizard, eevee, umbreon, pokeball]
+
+def set_focus(idx):
+	global cameraTarget
+	if 0 <= idx < len(focus_targets):
+		cameraTarget = glm.vec3(focus_targets[idx].position)
+
+# set default focus
+if not DEBUG_TRIANGLE and focus_targets:
+	set_focus(0)
 
 isRunning = True
 
@@ -145,72 +254,28 @@ while isRunning:
 			if event.key == pygame.K_f:
 				rend.ToggleFilledMode()
 
-			# Model switching (M, N, B keys)
-			if event.key == pygame.K_m:
-				# Remove current model from scene
-				rend.scene.remove(models[currentModelIndex])
-				# Switch to Iron Golem
-				currentModelIndex = 0
-				rend.scene.append(models[currentModelIndex])
-
-				# Update camera target to look at this model
-				cameraTarget = glm.vec3(models[currentModelIndex].position)
-
-				print(f"\n========================================")
-				print(f"SWITCHED TO: Iron Golem (Model 1/3)")
-				print(f"Position: {models[currentModelIndex].position}")
-				print(f"Scale: {models[currentModelIndex].scale}")
-				print(f"========================================\n")
-
-			if event.key == pygame.K_n:
-				# Remove current model from scene
-				rend.scene.remove(models[currentModelIndex])
-				# Switch to T-Rex
-				currentModelIndex = 1
-				rend.scene.append(models[currentModelIndex])
-
-				# Update camera target to look at this model
-				cameraTarget = glm.vec3(models[currentModelIndex].position)
-
-				print(f"\n========================================")
-				print(f"SWITCHED TO: T-Rex (Model 2/3)")
-				print(f"Position: {models[currentModelIndex].position}")
-				print(f"Scale: {models[currentModelIndex].scale}")
-				print(f"========================================\n")
-
-			if event.key == pygame.K_b:
-				# Remove current model from scene
-				rend.scene.remove(models[currentModelIndex])
-				# Switch to Titan
-				currentModelIndex = 2
-				rend.scene.append(models[currentModelIndex])
-
-				# Update camera target to look at this model
-				cameraTarget = glm.vec3(models[currentModelIndex].position)
-
-				print(f"\n========================================")
-				print(f"SWITCHED TO: Titan (Model 3/3)")
-				print(f"Position: {models[currentModelIndex].position}")
-				print(f"Scale: {models[currentModelIndex].scale}")
-				print(f"========================================\n")
-
 			if event.key == pygame.K_1:
+				set_focus(0)  # focus Bulbasaur
 				currFragmentShader = rim_lighting_shader
 				rend.SetShaders(currVertexShader, currFragmentShader)
 
 			if event.key == pygame.K_2:
+				set_focus(1)  # focus Charizard
 				currFragmentShader = fresnel_metallic_shader
 				rend.SetShaders(currVertexShader, currFragmentShader)
 
 			if event.key == pygame.K_3:
+				set_focus(2)  # focus Eevee
 				currFragmentShader = procedural_patterns_shader
 				rend.SetShaders(currVertexShader, currFragmentShader)
 
 			if event.key == pygame.K_4:
+				set_focus(3)  # focus Umbreon
 				currFragmentShader = gooch_shading_shader
 				rend.SetShaders(currVertexShader, currFragmentShader)
 
 			if event.key == pygame.K_5:
+				set_focus(4)  # focus Pokeball
 				currFragmentShader = psychedelic_warp_shader
 				rend.SetShaders(currVertexShader, currFragmentShader)
 
@@ -285,8 +350,9 @@ while isRunning:
 
 
 
-	# Rotate the current model
-	models[currentModelIndex].rotation.y += 45 * deltaTime
+	# Keep models static during debug
+	# for model in rend.scene:
+	# 	model.rotation.y += 45 * deltaTime
 
 
 	rend.Render()

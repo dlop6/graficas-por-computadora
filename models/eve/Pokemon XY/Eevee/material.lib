@@ -11,7 +11,7 @@ newmtl Material #12
 	Ns 2
 	d 1
 	Tr 0
-	map_Kd C:\Users\RandomTBush\Desktop\Models\Pokemon XY\Eevee\images\pm0133_00_Mouth1.png
+	map_Kd images/pm0133_00_Mouth1.png
 newmtl Material #13
 	Ka 0.588 0.588 0.588
 	Kd 0.588 0.588 0.588

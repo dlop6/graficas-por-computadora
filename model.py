@@ -22,10 +22,11 @@ import os
 import pygame
 
 class Model(object):
-	def __init__(self, filename):
+	def __init__(self, filename, load_textures=True):
 		self.objFile = Obj(filename)
 		# base path for resolving material texture paths
 		self.basePath = os.path.dirname(filename)
+		self.load_textures = load_textures
 
 		self.position = glm.vec3(0,0,0)
 		self.rotation = glm.vec3(0,0,0)
@@ -59,6 +60,12 @@ class Model(object):
 
 
 	def BuildBuffers(self):
+		def safe_lookup(lst, idx, filler):
+			"""Return lst[idx-1] if valid, otherwise filler."""
+			if not idx or idx < 0 or idx > len(lst):
+				return filler
+			return lst[idx - 1]
+
 		# Group faces by material (material can be None)
 		groups = {}
 		for i, face in enumerate(self.objFile.faces):
@@ -80,9 +87,18 @@ class Model(object):
 				faceNormals = []
 
 				for i in range(len(face)):
-					facePositions.append( self.objFile.vertices [ face[i][0] - 1 ] )
-					faceTexCoords.append( self.objFile.texCoords[ face[i][1] - 1 ] )
-					faceNormals.append( self.objFile.normals[ face[i][2] - 1 ] )
+					# some faces may only provide v or v/vt; pad to avoid IndexError
+					v_idx = face[i][0] if len(face[i]) > 0 else 0
+					vt_idx = face[i][1] if len(face[i]) > 1 else 0
+					vn_idx = face[i][2] if len(face[i]) > 2 else 0
+
+					facePositions.append(safe_lookup(self.objFile.vertices, v_idx, [0.0, 0.0, 0.0]))
+					faceTexCoords.append(safe_lookup(self.objFile.texCoords, vt_idx, [0.0, 0.0]))
+					faceNormals.append(safe_lookup(self.objFile.normals, vn_idx, [0.0, 1.0, 0.0]))
+
+				# skip degenerate faces
+				if len(facePositions) < 3:
+					continue
 
 				# triangle 0
 				for value in facePositions[0]: positions.append(value)
@@ -124,7 +140,7 @@ class Model(object):
 			sub['material'] = mat
 			# try to auto-load texture from material if available
 			sub['textureID'] = None
-			if mat is not None and hasattr(self.objFile, 'materials') and mat in self.objFile.materials:
+			if self.load_textures and mat is not None and hasattr(self.objFile, 'materials') and mat in self.objFile.materials:
 				m = self.objFile.materials[mat]
 				if 'map_Kd' in m and m['map_Kd']:
 					texpath = os.path.join(self.basePath, m['map_Kd'])
@@ -188,15 +204,14 @@ class Model(object):
 					glActiveTexture(GL_TEXTURE0)
 					glBindTexture(GL_TEXTURE_2D, texID)
 
+				# Position only for debug stability
 				sub['posBuffer'].Use(0, 3)
-				sub['texBuffer'].Use(1, 2)
-				sub['normalsBuffer'].Use(2, 3)
+				glDisableVertexAttribArray(1)
+				glDisableVertexAttribArray(2)
 
 				glDrawArrays(GL_TRIANGLES, 0, sub['vertexCount'])
 
 				glDisableVertexAttribArray(0)
-				glDisableVertexAttribArray(1)
-				glDisableVertexAttribArray(2)
 
 			return
 
