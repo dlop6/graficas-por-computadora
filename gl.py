@@ -98,6 +98,10 @@ class Renderer(object):
         # Ensure VAO is bound for attribute setup in Buffers (core profiles require this)
         glBindVertexArray(self.VAO)
 
+        # In debug triangle mode we can disable depth to simplify visibility
+        # (will be re-enabled when we restore scene rendering)
+        # Note: the scene code still has depth test enabled from __init__
+
         if self.active_postProcessing_Shader is not None:
             glBindFramebuffer(GL_FRAMEBUFFER, self.FBO)
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT )

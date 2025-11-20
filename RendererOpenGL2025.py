@@ -25,7 +25,7 @@ height = 540
 
 deltaTime = 0.0
 
-DEBUG_TRIANGLE = True  # Fase A: pipeline mínimo
+DEBUG_TRIANGLE = False  # Fase B/C: cargar modelos planos sin texturas
 
 
 screen = pygame.display.set_mode((width, height), pygame.DOUBLEBUF | pygame.OPENGL)
@@ -69,43 +69,19 @@ currFragmentShader = flat_color_shader
 
 rend.SetShaders(currVertexShader, currFragmentShader)
 
-# Disable skybox temporarily to debug model visibility
-# skyboxTextures = ["skybox/right.jpg",
-# 				  "skybox/left.jpg",
-# 				  "skybox/top.jpg",
-# 				  "skybox/bottom.jpg",
-# 				  "skybox/front.jpg",
-# 				  "skybox/back.jpg"]
-# rend.CreateSkybox(skyboxTextures)
+# Skybox desactivado en fase de depuración de geometría
 
 
 # Scene setup: Amaryllis City + Pokémon (Fase 3)
 if DEBUG_TRIANGLE:
-	class DebugTriangle:
-		def __init__(self):
-			self.buffer = Buffer([
-				-0.5, -0.5, -2.0,
-				0.5, -0.5, -2.0,
-				0.0,  0.5, -2.0
-			])
-			self.position = glm.vec3(0,0,0)
-			self.rotation = glm.vec3(0,0,0)
-			self.scale = glm.vec3(1,1,1)
-		def GetModelMatrix(self):
-			return glm.mat4(1)
-		def Render(self):
-			self.buffer.Use(0,3)
-			glDrawArrays(GL_TRIANGLES, 0, 3)
-			glDisableVertexAttribArray(0)
-
-	scene_models = [DebugTriangle()]
-	print("\n" + "="*60)
-	print("DEBUG TRIANGLE MODE")
-	print("="*60)
+	scene_models = []
 	amaryllis = None
+	print("\n" + "="*60)
+	print("DEBUG TRIANGLE MODE (models disabled)")
+	print("="*60)
 else:
 	print("\n" + "="*60)
-	print("LOADING DIORAMA MODELS...")
+	print("LOADING FLAT MODELS (Bulbasaur + Charizard + Eevee + Umbreon)...")
 	print("="*60)
 
 	scene_models = []
@@ -126,7 +102,7 @@ else:
 
 	try:
 		bulbasaur = Model("models/bulbasur/Bulbasaur.obj")
-		center_and_place(bulbasaur, target_height=6.0, world_pos=glm.vec3(-4, 0, -20))
+		center_and_place(bulbasaur, target_height=15.0, world_pos=glm.vec3(-10, 0, -35))
 		scene_models.append(bulbasaur)
 		print(f"[OK] Bulbasaur loaded ({len(bulbasaur.objFile.vertices)} verts)")
 	except Exception as e:
@@ -134,7 +110,7 @@ else:
 
 	try:
 		charizard = Model("models/charizard/006 - Charizard/Charizard.obj")
-		center_and_place(charizard, target_height=7.0, world_pos=glm.vec3(4, 0, -18))
+		center_and_place(charizard, target_height=18.0, world_pos=glm.vec3(12, 0, -40))
 		scene_models.append(charizard)
 		print(f"[OK] Charizard loaded ({len(charizard.objFile.vertices)} verts)")
 	except Exception as e:
@@ -142,7 +118,7 @@ else:
 
 	try:
 		eevee = Model("models/eve/Pokemon XY/Eevee/Eevee.obj")
-		center_and_place(eevee, target_height=5.0, world_pos=glm.vec3(-8, 0, -16))
+		center_and_place(eevee, target_height=10.0, world_pos=glm.vec3(-24, 0, -37))
 		scene_models.append(eevee)
 		print(f"[OK] Eevee loaded ({len(eevee.objFile.vertices)} verts)")
 	except Exception as e:
@@ -150,21 +126,12 @@ else:
 
 	try:
 		umbreon = Model("models/umbreon/Umbreon/UmbreonLowPoly.obj")
-		center_and_place(umbreon, target_height=4.0, world_pos=glm.vec3(10, 0, -14))
+		center_and_place(umbreon, target_height=10.0, world_pos=glm.vec3(26, 0, -38))
 		scene_models.append(umbreon)
 		print(f"[OK] Umbreon loaded ({len(umbreon.objFile.vertices)} verts)")
 	except Exception as e:
 		print(f"[ERR] Umbreon: {e}")
 
-	try:
-		pokeball = Model("models/pokeball/pokeball.obj")
-		center_and_place(pokeball, target_height=3.0, world_pos=glm.vec3(0, 0, -10))
-		scene_models.append(pokeball)
-		print(f"[OK] Pokeball loaded ({len(pokeball.objFile.vertices)} verts)")
-	except Exception as e:
-		print(f"[ERR] Pokeball: {e}")
-
-	# Temporarily skip the city to debug visibility
 	amaryllis = None
 
 # Add all loaded models to the renderer scene
@@ -177,7 +144,7 @@ print("="*60 + "\n")
 # Orbital camera system variables
 cameraYaw = 0.0           # Horizontal rotation angle (degrees)
 cameraPitch = 0.0         # Vertical rotation angle (degrees)
-cameraDistance = 5.0 if DEBUG_TRIANGLE else 20.0     # Distance from target
+cameraDistance = 5.0 if DEBUG_TRIANGLE else 70.0     # Distance from target
 # default target: first model if available, otherwise origin
 cameraTarget = glm.vec3(rend.scene[0].position) if rend.scene else glm.vec3(0, 0, 0)
 
@@ -222,18 +189,25 @@ def updateOrbitalCamera():
 updateOrbitalCamera()
 
 # Focus targets (skip city) and helper
-if DEBUG_TRIANGLE:
-	focus_targets = []
-else:
-	focus_targets = [bulbasaur, charizard, eevee, umbreon, pokeball]
+focus_targets = list(scene_models)
 
 def set_focus(idx):
 	global cameraTarget
 	if 0 <= idx < len(focus_targets):
 		cameraTarget = glm.vec3(focus_targets[idx].position)
 
+# Reset camera/orbit to defaults
+def reset_camera():
+	global cameraYaw, cameraPitch, cameraDistance, cameraTarget
+	cameraYaw = 0.0
+	cameraPitch = 0.0
+	cameraDistance = 60.0
+	if focus_targets:
+		cameraTarget = glm.vec3(focus_targets[0].position)
+	updateOrbitalCamera()
+
 # set default focus
-if not DEBUG_TRIANGLE and focus_targets:
+if focus_targets:
 	set_focus(0)
 
 isRunning = True
@@ -256,41 +230,19 @@ while isRunning:
 
 			if event.key == pygame.K_1:
 				set_focus(0)  # focus Bulbasaur
-				currFragmentShader = rim_lighting_shader
-				rend.SetShaders(currVertexShader, currFragmentShader)
 
 			if event.key == pygame.K_2:
 				set_focus(1)  # focus Charizard
-				currFragmentShader = fresnel_metallic_shader
-				rend.SetShaders(currVertexShader, currFragmentShader)
 
 			if event.key == pygame.K_3:
 				set_focus(2)  # focus Eevee
-				currFragmentShader = procedural_patterns_shader
-				rend.SetShaders(currVertexShader, currFragmentShader)
 
 			if event.key == pygame.K_4:
 				set_focus(3)  # focus Umbreon
-				currFragmentShader = gooch_shading_shader
-				rend.SetShaders(currVertexShader, currFragmentShader)
 
-			if event.key == pygame.K_5:
-				set_focus(4)  # focus Pokeball
-				currFragmentShader = psychedelic_warp_shader
-				rend.SetShaders(currVertexShader, currFragmentShader)
+			if event.key == pygame.K_r:
+				reset_camera()
 
-
-			if event.key == pygame.K_7:
-				currVertexShader = vertex_shader
-				rend.SetShaders(currVertexShader, currFragmentShader)
-
-			if event.key == pygame.K_8:
-				currVertexShader = fat_shader
-				rend.SetShaders(currVertexShader, currFragmentShader)
-
-			if event.key == pygame.K_9:
-				currVertexShader = water_shader
-				rend.SetShaders(currVertexShader, currFragmentShader)
 
 		# Mouse controls for orbital camera
 		if event.type == pygame.MOUSEBUTTONDOWN:
