@@ -60,7 +60,7 @@ stage.position = glm.vec3(0, 0, 0)
 rend.scene.append(stage)
 print("[OK] Plataforma creada (60x60 unidades)")
 
-# fase 5: charizard + umbreon (test incremental)
+# fase 5: bulbasaur + charizard + umbreon (test incremental)
 models = []
 
 # try:
@@ -73,15 +73,15 @@ models = []
 # except Exception as e:
 # 	print(f"[WARN] No se pudo cargar pokébola: {e}")
 
-# try:
-# 	bulbasaur = Model("models/bulbasaur/bulbasaur.obj")
-# 	bulbasaur.position = glm.vec3(-15, 2, -15)
-# 	bulbasaur.scale = glm.vec3(0.3, 0.3, 0.3)
-# 	rend.scene.append(bulbasaur)
-# 	models.append(("Bulbasaur", bulbasaur))
-# 	print(f"[OK] Bulbasaur cargado")
-# except Exception as e:
-# 	print(f"[WARN] No se pudo cargar bulbasaur: {e}")
+try:
+	bulbasaur = Model("models/bulbasur/Bulbasaur.obj")
+	bulbasaur.position = glm.vec3(-15, 2, -15)
+	bulbasaur.scale = glm.vec3(0.3, 0.3, 0.3)
+	rend.scene.append(bulbasaur)
+	models.append(("Bulbasaur", bulbasaur))
+	print(f"[OK] Bulbasaur cargado")
+except Exception as e:
+	print(f"[WARN] No se pudo cargar bulbasaur: {e}")
 
 try:
 	charizard = Model("models/charizard/006 - Charizard/Charizard.obj")
