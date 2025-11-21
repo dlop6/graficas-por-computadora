@@ -28,8 +28,8 @@ class Renderer(object):
 
         self.skybox = None
 
-        self.pointLight = glm.vec3(0,0,0)
-        self.ambientLight = 0.1
+        self.pointLight = glm.vec3(0, 15, 10)
+        self.ambientLight = 0.3
 
 
         self.value = 0.0;
