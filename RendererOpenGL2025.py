@@ -9,6 +9,7 @@ from model import Model
 from stage import Stage
 from vertexShaders import *
 from fragmentShaders import *
+from postProcessingShaders import *
 from OpenGL.GL import glDisable, GL_CULL_FACE
 
 width = 960
@@ -173,6 +174,12 @@ except Exception as e:
 	print(f"[WARN] Error al compilar shaders: {e}")
 	print("[INFO] Usando shader por defecto para todos los modelos")
 
+print("="*60 + "\n")
+
+# activar post-processing con bloom + vignette
+print("Activando post-processing: Bloom + Vignette...")
+rend.SetPostProcessingShaders(vertex_postProcess, bloom_vignette_postProcess)
+print("[OK] Post-processing activado")
 print("="*60 + "\n")
 
 # sistema de cámara orbital independiente

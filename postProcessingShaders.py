@@ -227,3 +227,58 @@ void main() {
     }
 }
 '''
+
+bloom_vignette_postProcess = '''
+#version 430 core
+
+in vec2 fragTexCoords;
+
+uniform sampler2D frameBuffer;
+uniform float time;
+
+out vec4 fragColor;
+
+void main() {
+    vec2 texelSize = 1.0 / vec2(textureSize(frameBuffer, 0));
+
+    // bloom: muestreo gaussiano simple
+    vec3 color = vec3(0.0);
+    float totalWeight = 0.0;
+
+    // kernel 3x3 para bloom
+    for(int x = -2; x <= 2; x++) {
+        for(int y = -2; y <= 2; y++) {
+            vec2 offset = vec2(x, y) * texelSize;
+            float weight = 1.0 / (1.0 + length(vec2(x, y)));
+            color += texture(frameBuffer, fragTexCoords + offset).rgb * weight;
+            totalWeight += weight;
+        }
+    }
+
+    color /= totalWeight;
+
+    // extraer brillo para bloom
+    vec3 originalColor = texture(frameBuffer, fragTexCoords).rgb;
+    float brightness = dot(originalColor, vec3(0.2126, 0.7152, 0.0722));
+    vec3 bloomColor = vec3(0.0);
+    if(brightness > 0.7) {
+        bloomColor = originalColor * (brightness - 0.7) * 2.0;
+    }
+
+    // combinar original + bloom
+    vec3 finalColor = originalColor * 0.7 + color * 0.3 + bloomColor * 0.5;
+
+    // vignette
+    vec2 centered = fragTexCoords * 2.0 - 1.0;
+    float dist = length(centered);
+    float vignette = smoothstep(0.7, 1.4, dist);
+    finalColor = mix(finalColor, vec3(0.0), vignette * 0.6);
+
+    // ajuste de contraste y saturación
+    finalColor = pow(finalColor, vec3(0.9));
+    float gray = dot(finalColor, vec3(0.299, 0.587, 0.114));
+    finalColor = mix(vec3(gray), finalColor, 1.2);
+
+    fragColor = vec4(finalColor, 1.0);
+}
+'''
