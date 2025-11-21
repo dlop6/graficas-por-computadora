@@ -1,27 +1,78 @@
-# Lab 10 - Renderer OpenGL UVG
+# Lab 10 - Diorama OpenGL
 
-## Controles rápidos
+diorama 3d con modelos pokémon renderizados en opengl 3.3+. incluye shaders personalizados, post-processing, y sistema de cámara orbital.
 
-- **Cambiar modelo:**
-  - `M` = Iron Golem
-  - `N` = T-Rex
-  - `B` = Titan
+## ejecución
 
-- **Cámara orbital:**
-  - `A` / `D` = Girar alrededor del modelo
-  - `W` / `S` = Subir/Bajar la cámara
-  - `Q` / `E` = Zoom in/out
-  - **Mouse izquierdo + arrastrar:** Rotar cámara libremente
-  - **Rueda del mouse:** Zoom in/out
+```bash
+python RendererOpenGL2025.py
+```
 
-- **Shaders:**
-  - `1-5` = Cambiar fragment shader
-  - `7-9` = Cambiar vertex shader
-  - `F` = Wireframe
+## controles
 
-- **Notas:**
-  - Solo un modelo visible a la vez
-  - La cámara siempre mira al modelo activo
-  - El skybox se muestra automáticamente
+### cámara orbital
 
+| control | acción |
+|---------|--------|
+| **W/S** | rotar cámara arriba/abajo (pitch) |
+| **A/D** | rotar cámara izquierda/derecha (yaw) |
+| **Q/E** | alejar/acercar zoom |
+| **mouse drag (click izq.)** | rotar cámara alrededor del target |
+| **mouse wheel** | zoom |
+| **C** | activar/desactivar rotación automática |
+
+### cambio de vista
+
+| tecla | objetivo |
+|-------|----------|
+| **0** | vista general |
+| **1** | pokeball |
+| **2** | charizard |
+| **3** | eevee |
+| **4** | umbreon |
+| **5** | bulbasaur |
+
+### visualización
+
+| control | acción |
+|---------|--------|
+| **F** | alternar entre filled/wireframe |
+
+## arquitectura
+
+### modelos
+- **plataforma procedural** (60x60 unidades)
+- **charizard** - shader plasma multicolor
+- **eevee** - shader patrones procedurales
+- **umbreon** - shader psicodélico 10 capas
+- **bulbasaur** - shader patrones ondulantes
+- **pokeball** - shader glitch holográfico
+
+### shaders creativos
+cada modelo implementa un fragment shader único con efectos avanzados:
+- kaleidoscope transforms
+- fractal brownian motion
+- voronoi cells
+- chromatic aberration
+- fresnel/rim lighting
+- procedural noise
+
+### post-processing
+- bloom con kernel 5x5
+- vignette dinámico
+- ajuste de contraste y saturación
+
+### iluminación
+- point light elevada (0, 20, 0)
+- ambient light 0.5
+- phong shading en todos los modelos
+
+## dependencias
+
+```
+pygame
+PyOpenGL
+PyGLM
+numpy
+```
 

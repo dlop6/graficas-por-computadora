@@ -215,6 +215,10 @@ mousePressed = False
 lastMouseX = 0
 lastMouseY = 0
 
+# modo circular automático (20 pts rúbrica)
+circularMotionEnabled = False
+circularRotationSpeed = 15.0  # grados por segundo
+
 def updateOrbitalCamera():
 	"""actualiza posición de cámara basada en parámetros orbitales"""
 	global cameraYaw, cameraPitch, cameraDistance, cameraTarget
@@ -241,6 +245,9 @@ def updateOrbitalCamera():
 		glm.vec3(0, 1, 0)
 	)
 
+	# CRÍTICO: indicar que estamos usando lookAt para que Camera.Update() no sobrescriba
+	rend.camera.usingLookAt = True
+
 # inicializar posición de cámara
 updateOrbitalCamera()
 
@@ -261,6 +268,12 @@ while isRunning:
 		elif event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_f:
 				rend.ToggleFilledMode()
+
+			# toggle movimiento circular automático (20 pts rúbrica)
+			if event.key == pygame.K_c:
+				circularMotionEnabled = not circularMotionEnabled
+				estado = "ACTIVADO" if circularMotionEnabled else "DESACTIVADO"
+				print(f"[CAMERA] Movimiento circular automático: {estado}")
 
 			# fase 7: cambio de vista entre modelos (15 pts)
 			# teclas numéricas 0-5 para enfocar cada modelo
@@ -332,6 +345,12 @@ while isRunning:
 	if keys[K_e]:
 		cameraDistance -= 30 * deltaTime
 
+	# movimiento circular automático (20 pts rúbrica)
+	# rotación continua alrededor del target cuando está activado
+	# IMPORTANTE: debe estar ANTES de updateOrbitalCamera()
+	if circularMotionEnabled:
+		cameraYaw += circularRotationSpeed * deltaTime
+
 	# actualizar posición de cámara
 	updateOrbitalCamera()
 
@@ -343,8 +362,6 @@ while isRunning:
 	if keys[K_x]:
 		if rend.value < 1.0:
 			rend.value += 1 * deltaTime
-
-	# rotación automática removida - los modelos permanecen estáticos
 
 	rend.Render()
 	pygame.display.flip()
