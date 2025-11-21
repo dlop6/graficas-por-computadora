@@ -136,8 +136,44 @@ except Exception as e:
 print(f"\nTotal modelos cargados: {len(models) + 1} (plataforma + {len(models)} pokémon)")
 print("="*60 + "\n")
 
-# fase 6: DESHABILITADA TEMPORALMENTE - usar shaders por defecto del renderer
-# nota: los shaders únicos causan problemas de renderizado, investigar después
+# fase 6: asignar shaders únicos a cada modelo (compilados ANTES del loop)
+print("Compilando shaders únicos...")
+from OpenGL.GL.shaders import compileProgram, compileShader
+from OpenGL.GL import GL_VERTEX_SHADER, GL_FRAGMENT_SHADER
+
+try:
+	# compilar shaders creativos UNA SOLA VEZ
+	pulsing_program = compileProgram(
+		compileShader(vertex_shader, GL_VERTEX_SHADER),
+		compileShader(rim_lighting_shader, GL_FRAGMENT_SHADER)
+	)
+	fire_program = compileProgram(
+		compileShader(vertex_shader, GL_VERTEX_SHADER),
+		compileShader(fresnel_metallic_shader, GL_FRAGMENT_SHADER)
+	)
+	shiny_program = compileProgram(
+		compileShader(vertex_shader, GL_VERTEX_SHADER),
+		compileShader(procedural_patterns_shader, GL_FRAGMENT_SHADER)
+	)
+	dark_program = compileProgram(
+		compileShader(vertex_shader, GL_VERTEX_SHADER),
+		compileShader(psychedelic_warp_shader, GL_FRAGMENT_SHADER)
+	)
+
+	# asignar shaders a modelos específicos
+	pokeball.shaderProgram = pulsing_program
+	charizard.shaderProgram = fire_program
+	eevee.shaderProgram = shiny_program
+	bulbasaur.shaderProgram = shiny_program  # mismo shader, diferente modelo
+	umbreon.shaderProgram = dark_program
+	# stage NO tiene shader único, usa el default del renderer
+
+	print("[OK] Shaders únicos asignados correctamente")
+except Exception as e:
+	print(f"[WARN] Error al compilar shaders: {e}")
+	print("[INFO] Usando shader por defecto para todos los modelos")
+
+print("="*60 + "\n")
 
 # sistema de cámara orbital independiente
 cameraYaw = 0.0           # ángulo de rotación horizontal (grados)
