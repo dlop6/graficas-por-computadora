@@ -210,9 +210,10 @@ class Model(object):
 
 				glDrawArrays(GL_TRIANGLES, 0, sub['vertexCount'])
 
-				glDisableVertexAttribArray(0)
-				glDisableVertexAttribArray(1)
-				glDisableVertexAttribArray(2)
+			# deshabilitar atributos una sola vez fuera del loop
+			glDisableVertexAttribArray(0)
+			glDisableVertexAttribArray(1)
+			glDisableVertexAttribArray(2)
 
 			return
 

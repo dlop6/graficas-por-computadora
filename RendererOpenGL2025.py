@@ -60,7 +60,7 @@ stage.position = glm.vec3(0, 0, 0)
 rend.scene.append(stage)
 print("[OK] Plataforma creada (60x60 unidades)")
 
-# fase 5: DEBUG - cargar solo umbreon (sabemos que funciona)
+# fase 5: charizard + umbreon (test incremental)
 models = []
 
 # try:
@@ -83,15 +83,15 @@ models = []
 # except Exception as e:
 # 	print(f"[WARN] No se pudo cargar bulbasaur: {e}")
 
-# try:
-# 	charizard = Model("models/charizard/charizard.obj")
-# 	charizard.position = glm.vec3(15, 2, -15)
-# 	charizard.scale = glm.vec3(1, 1, 1)
-# 	rend.scene.append(charizard)
-# 	models.append(("Charizard", charizard))
-# 	print(f"[OK] Charizard cargado")
-# except Exception as e:
-# 	print(f"[WARN] No se pudo cargar charizard: {e}")
+try:
+	charizard = Model("models/charizard/006 - Charizard/Charizard.obj")
+	charizard.position = glm.vec3(15, 2, -15)
+	charizard.scale = glm.vec3(1, 1, 1)
+	rend.scene.append(charizard)
+	models.append(("Charizard", charizard))
+	print(f"[OK] Charizard cargado")
+except Exception as e:
+	print(f"[WARN] No se pudo cargar charizard: {e}")
 
 # try:
 # 	eevee = Model("models/eevee/eevee.obj")
@@ -109,7 +109,7 @@ try:
 	umbreon.scale = glm.vec3(3, 3, 3)
 	rend.scene.append(umbreon)
 	models.append(("Umbreon", umbreon))
-	print(f"[OK] Umbreon cargado (DEBUG: solo este modelo)")
+	print(f"[OK] Umbreon cargado")
 except Exception as e:
 	print(f"[WARN] No se pudo cargar umbreon: {e}")
 
