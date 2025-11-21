@@ -11,6 +11,10 @@ class Obj(object):
         self.faceMaterials = []   # material usado en cada cara
         self.materials = {}       # materiales cargados desde .mtl
 
+        # agregar valores por defecto al inicio (índice 0)
+        self.texCoords.append([0, 0])
+        self.normals.append([0, 1, 0])
+
         # Leemos todas las líneas del archivo .obj
         with open(filename, "r") as file:
             lines = file.read().splitlines()
@@ -61,8 +65,16 @@ class Obj(object):
                 verts = [v for v in value.split() if v]
 
                 for vert in verts:
-                    # Formato típico: v/vt/vn (algunos pueden faltar)
-                    indices = [int(x) if x else 0 for x in vert.split("/")]
+                    # formato soportado: v, v/vt, v/vt/vn, v//vn
+                    parts = vert.split("/")
+                    # asegurar que siempre tengamos 3 índices [v, vt, vn]
+                    indices = [0, 0, 0]
+                    if len(parts) >= 1 and parts[0]:
+                        indices[0] = int(parts[0])
+                    if len(parts) >= 2 and parts[1]:
+                        indices[1] = int(parts[1])
+                    if len(parts) >= 3 and parts[2]:
+                        indices[2] = int(parts[2])
                     face.append(indices)
 
                 self.faces.append(face)

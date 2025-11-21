@@ -1,6 +1,8 @@
 # Plan por fases — Diorama Lab 10
 
-Basado en `docs/instrucciones.txt` y la rúbrica (modelos, shaders, skybox, movimientos de cámara y controles documentados). Escena objetivo: `models/Amaryllis City/OBJ/Amaryllis City.obj` como entorno base + pokébola + pokémon de `models/` (bulbasur, charizard, eve, umbreon), todos visibles dentro de la ciudad y con combinaciones de shaders distintas para cada modelo.
+Basado en `docs/instrucciones.txt` y la rúbrica (modelos, shaders, skybox, movimientos de cámara y controles documentados).
+
+**CAMBIO DE DISEÑO**: En lugar de Amaryllis City (muy grande), se usa plataforma procedural simple (stage.py) como base + pokébola + 4 pokémon (bulbasur, charizard, eevee, umbreon) como protagonistas visibles, cada uno con shaders distintos.
 
 ## Fase 1: Inspección de assets
 - [ ] Listar assets y rutas finales: ciudad (`Amaryllis City/OBJ/Amaryllis City.obj`), pokeball, bulbasur, charizard, eve, umbreon.
@@ -20,21 +22,23 @@ Basado en `docs/instrucciones.txt` y la rúbrica (modelos, shaders, skybox, movi
 - [x] Revisar y ajustar luz puntual y luz ambiente para buena lectura de la ciudad y los modelos.
 - [x] Confirmar skybox se crea y dibuja antes de los modelos sin escribir al depth buffer (ya soportado).
 
-## Fase 4: Montaje de la ciudad (entorno) ✅
+## Fase 4: Montaje de la plataforma base ✅
 
-- [x] Cargar `Amaryllis City.obj` con sus materiales/texturas.
-- [x] Ajustar `position/rotation/scale` para centrar la ciudad en torno al origen y apoyar el piso en Y≈0.
-- [x] Validar que el origin y la escala permiten alojar los otros modelos dentro de calles/plazas.
+- [x] Crear plataforma procedural simple (stage.py) de 60x60 unidades.
+- [x] Posicionar en origen para servir de base al diorama.
+- [x] Validar dimensiones para alojar los 5 modelos pokémon.
 
-## Fase 5: Colocación de modelos interactivos (pokebola + 4 pokémon)
-- [ ] Instanciar pokeball, bulbasur, charizard, eve, umbreon (5 modelos contabilizables; la ciudad cuenta como base).
-- [ ] Asignar `position/rotation/scale` específicas para ubicarlos dentro de la ciudad, evitando solapes y hundimiento.
-- [ ] Verificar visibilidad inicial desde una cámara general (sin depender de saltos de vista).
+## Fase 5: Colocación de modelos interactivos (pokebola + 4 pokémon) ✅
 
-## Fase 6: Shaders por modelo (requisito rúbrica)
-- [ ] Seleccionar combinación única (vertex + fragment) para cada modelo (ciudad incluida) usando los shaders existentes.
-- [ ] Setear uniforms comunes (luz puntual, ambient, `time`, `value`) y, si es necesario, parámetros por modelo sin romper la regla de “shader distinto”.
-- [ ] Opcional: exponer teclas para ciclar shaders de un modelo solo si ayuda a demostrar; por defecto cada modelo queda con su shader asignado.
+- [x] Instanciar pokeball, bulbasaur, charizard, eevee, umbreon (5 modelos).
+- [x] Asignar `position/rotation/scale` específicas en las 4 esquinas + centro de la plataforma.
+- [x] Verificar visibilidad inicial desde cámara orbital.
+
+## Fase 6: Shaders por modelo (requisito rúbrica) ✅
+
+- [x] Seleccionar combinación única (vertex + fragment) para cada modelo usando shaders existentes.
+- [x] Compilar y asignar shaderProgram único a cada objeto (plataforma + 5 pokémon).
+- [x] Uniforms comunes (luz, time, value) se pasan automáticamente por el renderer.
 
 ## Fase 7: Cámara y controles (teclado + mouse)
 - [ ] Orbitar/circular: A/D (y mouse drag) alrededor del `cameraTarget`.

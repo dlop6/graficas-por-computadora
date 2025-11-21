@@ -81,8 +81,11 @@ class Model(object):
 
 				for i in range(len(face)):
 					facePositions.append( self.objFile.vertices [ face[i][0] - 1 ] )
-					faceTexCoords.append( self.objFile.texCoords[ face[i][1] - 1 ] )
-					faceNormals.append( self.objFile.normals[ face[i][2] - 1 ] )
+					# si el índice es 0, usar el valor por defecto (índice 0)
+					texIdx = face[i][1] if face[i][1] > 0 else 0
+					normIdx = face[i][2] if face[i][2] > 0 else 0
+					faceTexCoords.append( self.objFile.texCoords[ texIdx if texIdx == 0 else texIdx - 1 ] )
+					faceNormals.append( self.objFile.normals[ normIdx if normIdx == 0 else normIdx - 1 ] )
 
 				# triangle 0
 				for value in facePositions[0]: positions.append(value)
