@@ -96,7 +96,7 @@ except Exception as e:
 try:
 	eevee = Model("models/eve/Pokemon XY/Eevee/Eevee.obj")
 	eevee.position = glm.vec3(-15, 2, 15)
-	eevee.scale = glm.vec3(0.5, 0.5, 0.5)
+	eevee.scale = glm.vec3(0.2, 0.2, 0.2)
 	rend.scene.append(eevee)
 	models.append(("Eevee", eevee))
 	print(f"[OK] Eevee cargado")
@@ -112,6 +112,16 @@ try:
 	print(f"[OK] Umbreon cargado")
 except Exception as e:
 	print(f"[WARN] No se pudo cargar umbreon: {e}")
+
+try:
+	bulbasaur = Model("models/bulbasur/Bulbasaur.obj")
+	bulbasaur.position = glm.vec3(15, 2, 15)
+	bulbasaur.scale = glm.vec3(0.15, 0.15, 0.15)
+	rend.scene.append(bulbasaur)
+	models.append(("Bulbasaur", bulbasaur))
+	print(f"[OK] Bulbasaur cargado")
+except Exception as e:
+	print(f"[WARN] No se pudo cargar bulbasaur: {e}")
 
 print(f"\nTotal modelos cargados: {len(models) + 1} (plataforma + {len(models)} pokémon)")
 print("="*60 + "\n")
