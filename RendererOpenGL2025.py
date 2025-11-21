@@ -176,20 +176,24 @@ except Exception as e:
 print("="*60 + "\n")
 
 # sistema de cámara orbital independiente
-cameraYaw = 0.0           # ángulo de rotación horizontal (grados)
-cameraPitch = 20.0        # ángulo mirando hacia abajo (más bajo = más cerca del horizonte)
-cameraDistance = 50.0     # distancia más cercana para ver mejor los modelos
-# target apunta al centro de la plataforma
-cameraTarget = glm.vec3(0, 2, 0)
+# solución directa: cámara frente a pokeball con profundidad y altura
+# pokeball está en (0, 3, 15)
+# colocar cámara en (0, 10, 40) mirando a pokeball = altura +7, profundidad +25
+cameraYaw = 0.0           # mirando directo hacia adelante (hacia -Z)
+cameraPitch = 20.0        # ligeramente elevada
+cameraDistance = 50.0     # distancia para ver toda la escena
+# target apunta a la pokeball
+cameraTarget = glm.vec3(0, 3, 15)  # pokeball
 
-# lista de puntos de interés para saltos de vista (fase 7)
+# lista de puntos de interés para saltos de vista (fase 7: cambio de vista entre modelos)
+# cada entrada apunta a la posición exacta de cada modelo cargado
 viewTargets = [
-	glm.vec3(0, 3, 0),        # 1: vista general (centro de plataforma)
-	glm.vec3(0, 3, 0),        # 2: pokébola (centro)
-	glm.vec3(-15, 2, -15),    # 3: bulbasaur (esquina trasera izquierda)
-	glm.vec3(15, 2, -15),     # 4: charizard (esquina trasera derecha)
-	glm.vec3(-15, 2, 15),     # 5: eevee (esquina frontal izquierda)
-	glm.vec3(15, 2, 15)       # 6: umbreon (esquina frontal derecha)
+	glm.vec3(0, 3, 0),        # 0: vista general (centro de plataforma) - TECLA 0
+	glm.vec3(0, 3, 15),       # 1: pokeball - TECLA 1
+	glm.vec3(15, 2, -15),     # 2: charizard - TECLA 2
+	glm.vec3(-15, 2, 15),     # 3: eevee - TECLA 3
+	glm.vec3(0, 5, 0),        # 4: umbreon (centro elevado) - TECLA 4
+	glm.vec3(15, 2, 15)       # 5: bulbasaur - TECLA 5
 ]
 
 # límites de cámara ajustados para el diorama
@@ -251,30 +255,31 @@ while isRunning:
 			if event.key == pygame.K_f:
 				rend.ToggleFilledMode()
 
-			# fase 7: saltos de vista con hotkeys 1-6
-			if event.key == pygame.K_1:
+			# fase 7: cambio de vista entre modelos (15 pts)
+			# teclas numéricas 0-5 para enfocar cada modelo
+			if event.key == pygame.K_0:
 				cameraTarget = viewTargets[0]
-				print(f"[CAMERA] Vista 1: General (centro)")
+				print(f"[CAMERA] Vista: General")
+
+			if event.key == pygame.K_1:
+				cameraTarget = viewTargets[1]
+				print(f"[CAMERA] Vista: Pokeball")
 
 			if event.key == pygame.K_2:
-				cameraTarget = viewTargets[1]
-				print(f"[CAMERA] Vista 2: Pokébola")
+				cameraTarget = viewTargets[2]
+				print(f"[CAMERA] Vista: Charizard")
 
 			if event.key == pygame.K_3:
-				cameraTarget = viewTargets[2]
-				print(f"[CAMERA] Vista 3: Bulbasaur")
+				cameraTarget = viewTargets[3]
+				print(f"[CAMERA] Vista: Eevee")
 
 			if event.key == pygame.K_4:
-				cameraTarget = viewTargets[3]
-				print(f"[CAMERA] Vista 4: Charizard")
+				cameraTarget = viewTargets[4]
+				print(f"[CAMERA] Vista: Umbreon")
 
 			if event.key == pygame.K_5:
-				cameraTarget = viewTargets[4]
-				print(f"[CAMERA] Vista 5: Eevee")
-
-			if event.key == pygame.K_6:
 				cameraTarget = viewTargets[5]
-				print(f"[CAMERA] Vista 6: Umbreon")
+				print(f"[CAMERA] Vista: Bulbasaur")
 
 		# controles de mouse para cámara orbital
 		if event.type == pygame.MOUSEBUTTONDOWN:
