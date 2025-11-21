@@ -5,11 +5,11 @@ from pygame.locals import *
 import glm
 
 from gl import Renderer
-from buffer import Buffer
 from model import Model
 from vertexShaders import *
 from fragmentShaders import *
-from OpenGL.GL import glDisable, GL_CULL_FACE
+from OpenGL.GL import glDisable, GL_CULL_FACE, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER
+from OpenGL.GL.shaders import compileProgram, compileShader
 
 width = 960
 height = 540
@@ -22,13 +22,15 @@ clock = pygame.time.Clock()
 
 
 rend = Renderer(screen)
-rend.pointLight = glm.vec3(0, 5, -5)  # Light above and in front of models
-rend.ambientLight = 0.4  # More ambient light to see models better
+# luz puntual elevada para iluminar toda la ciudad desde arriba
+rend.pointLight = glm.vec3(0, 20, 0)
+# luz ambiente alta para asegurar buena visibilidad de todos los modelos
+rend.ambientLight = 0.5
 
-# Ensure back-face culling is disabled so models with arbitrary winding are visible
+# desactivar culling para asegurar visibilidad de todos los modelos
 glDisable(GL_CULL_FACE)
 
-# Make sure filled mode is ON (not wireframe)
+# asegurar modo filled activo
 if not rend.filledMode:
     rend.ToggleFilledMode()
 
@@ -47,84 +49,76 @@ skyboxTextures = ["skybox/right.jpg",
 rend.CreateSkybox(skyboxTextures)
 
 
-# Load all three models
+# carga de modelos - fase 4 y 5
 print("\n" + "="*60)
-print("LOADING MODELS...")
+print("CARGANDO MODELOS...")
 print("="*60)
 
-ironGolemModel = Model("models/iron_golem_clean/iron_golem.obj")
-ironGolemModel.AddTexture("textures/lava_cracks.jpg")  # Additional texture for effects
-ironGolemModel.position = glm.vec3(0, 0, -80)  # Pushed further back
-ironGolemModel.scale = glm.vec3(3.0, 3.0, 3.0)  # Larger scale to be visible
-print(f"[OK] Iron Golem loaded - Vertices: {len(ironGolemModel.objFile.vertices)}, Faces: {len(ironGolemModel.objFile.faces)}")
+# fase 4: cargar ciudad base
+try:
+	cityModel = Model("models/Amaryllis City/OBJ/Amaryllis City.obj")
+	# coordenadas originales en miles (-4320 a ~8000 aproximadamente)
+	# con escala 0.01 la ciudad queda en ~150 unidades de diámetro
+	cityModel.position = glm.vec3(0, -10, 0)  # bajar un poco para apoyar en Y≈0
+	cityModel.rotation = glm.vec3(0, 0, 0)
+	cityModel.scale = glm.vec3(0.01, 0.01, 0.01)
+	rend.scene.append(cityModel)
+	print(f"[OK] Amaryllis City cargada - Vértices: {len(cityModel.objFile.vertices)}, Caras: {len(cityModel.objFile.faces)}")
+	print(f"    Escala: {cityModel.scale}, Posición: {cityModel.position}")
+except Exception as e:
+	print(f"[ERROR] No se pudo cargar Amaryllis City: {e}")
+	import traceback
+	traceback.print_exc()
+	cityModel = None
 
-trexModel = Model("models/trex/trex.obj")
-trexModel.position = glm.vec3(0, -5, -45)  # Pushed further back
-trexModel.scale = glm.vec3(0.08, 0.08, 0.08)  # Larger scale
-print(f"[OK] T-Rex loaded - Vertices: {len(trexModel.objFile.vertices)}, Faces: {len(trexModel.objFile.faces)}")
-
-titanModel = Model("models/titan_clean/titan.obj")
-titanModel.position = glm.vec3(0, 0, -35)  # Pushed further back
-titanModel.scale = glm.vec3(5.0, 5.0, 5.0)  # Large scale
-print(f"[OK] Titan loaded - Vertices: {len(titanModel.objFile.vertices)}, Faces: {len(titanModel.objFile.faces)}")
-
-# List of all models
-models = [ironGolemModel, trexModel, titanModel]
-currentModelIndex = 0
-
-# Add only the current model to the scene
-rend.scene.append(models[currentModelIndex])
-print(f"\nStarting with: Iron Golem (Model 1/3)")
-print(f"Scene has {len(rend.scene)} objects")
-print(f"Filled mode: {rend.filledMode}")
 print("="*60 + "\n")
 
-# Orbital camera system variables
-cameraYaw = 0.0           # Horizontal rotation angle (degrees)
-cameraPitch = 0.0         # Vertical rotation angle (degrees)
-cameraDistance = 50.0     # Distance from target
-# la cámara debe apuntar al primer modelo (iron golem)
-cameraTarget = glm.vec3(ironGolemModel.position)
+# sistema de cámara orbital independiente
+cameraYaw = 0.0           # ángulo de rotación horizontal (grados)
+cameraPitch = 20.0        # ángulo inicial mirando un poco hacia abajo
+cameraDistance = 100.0    # distancia inicial más alejada para ver la ciudad completa
+# target inicial en el centro de la escena (será ajustable con hotkeys en fase 7)
+cameraTarget = glm.vec3(0, 0, 0)
 
-# Limits
-MIN_DISTANCE = 10.0
-MAX_DISTANCE = 100.0
+# límites de cámara ajustados para escena más grande
+MIN_DISTANCE = 20.0
+MAX_DISTANCE = 300.0
 MIN_PITCH = -80.0
 MAX_PITCH = 80.0
 
-# Mouse control
+# control de mouse
 mouseSensitivity = 0.2
 mousePressed = False
 lastMouseX = 0
 lastMouseY = 0
 
 def updateOrbitalCamera():
-	"""Update camera position based on orbital parameters"""
+	"""actualiza posición de cámara basada en parámetros orbitales"""
 	global cameraYaw, cameraPitch, cameraDistance, cameraTarget
 
-	# Clamp values
+	# aplicar límites
 	cameraPitch = max(MIN_PITCH, min(MAX_PITCH, cameraPitch))
 	cameraDistance = max(MIN_DISTANCE, min(MAX_DISTANCE, cameraDistance))
 
-	# Convert to radians
+	# convertir a radianes
 	yawRad = glm.radians(cameraYaw)
 	pitchRad = glm.radians(cameraPitch)
 
-	# Calculate camera position using spherical coordinates
+	# calcular posición usando coordenadas esféricas
 	x = cameraTarget.x + cameraDistance * glm.cos(pitchRad) * glm.sin(yawRad)
 	y = cameraTarget.y + cameraDistance * glm.sin(pitchRad)
 	z = cameraTarget.z + cameraDistance * glm.cos(pitchRad) * glm.cos(yawRad)
 
 	rend.camera.position = glm.vec3(x, y, z)
 
-	# Use lookAt to make camera always look at target
+	# lookat siempre apunta al target (independiente de modelos)
 	rend.camera.viewMatrix = glm.lookAt(
 		rend.camera.position,
 		cameraTarget,
-		glm.vec3(0, 1, 0)  # Up vector
+		glm.vec3(0, 1, 0)
 	)
 
-# Initialize camera position
+# inicializar posición de cámara
 updateOrbitalCamera()
 
 isRunning = True
@@ -145,55 +139,8 @@ while isRunning:
 			if event.key == pygame.K_f:
 				rend.ToggleFilledMode()
 
-			# Model switching (M, N, B keys)
-			if event.key == pygame.K_m:
-				# Remove current model from scene
-				rend.scene.remove(models[currentModelIndex])
-				# Switch to Iron Golem
-				currentModelIndex = 0
-				rend.scene.append(models[currentModelIndex])
-
-				# Update camera target to look at this model
-				cameraTarget = glm.vec3(models[currentModelIndex].position)
-
-				print(f"\n========================================")
-				print(f"SWITCHED TO: Iron Golem (Model 1/3)")
-				print(f"Position: {models[currentModelIndex].position}")
-				print(f"Scale: {models[currentModelIndex].scale}")
-				print(f"========================================\n")
-
-			if event.key == pygame.K_n:
-				# Remove current model from scene
-				rend.scene.remove(models[currentModelIndex])
-				# Switch to T-Rex
-				currentModelIndex = 1
-				rend.scene.append(models[currentModelIndex])
-
-				# Update camera target to look at this model
-				cameraTarget = glm.vec3(models[currentModelIndex].position)
-
-				print(f"\n========================================")
-				print(f"SWITCHED TO: T-Rex (Model 2/3)")
-				print(f"Position: {models[currentModelIndex].position}")
-				print(f"Scale: {models[currentModelIndex].scale}")
-				print(f"========================================\n")
-
-			if event.key == pygame.K_b:
-				# Remove current model from scene
-				rend.scene.remove(models[currentModelIndex])
-				# Switch to Titan
-				currentModelIndex = 2
-				rend.scene.append(models[currentModelIndex])
-
-				# Update camera target to look at this model
-				cameraTarget = glm.vec3(models[currentModelIndex].position)
-
-				print(f"\n========================================")
-				print(f"SWITCHED TO: Titan (Model 3/3)")
-				print(f"Position: {models[currentModelIndex].position}")
-				print(f"Scale: {models[currentModelIndex].scale}")
-				print(f"========================================\n")
-
+			# teclas 1-5 reservadas para saltos de vista (fase 7)
+			# por ahora solo cambian shaders globales temporalmente
 			if event.key == pygame.K_1:
 				currFragmentShader = rim_lighting_shader
 				rend.SetShaders(currVertexShader, currFragmentShader)
@@ -227,9 +174,9 @@ while isRunning:
 				currVertexShader = water_shader
 				rend.SetShaders(currVertexShader, currFragmentShader)
 
-		# Mouse controls for orbital camera
+		# controles de mouse para cámara orbital
 		if event.type == pygame.MOUSEBUTTONDOWN:
-			if event.button == 1:  # Left mouse button
+			if event.button == 1:
 				mousePressed = True
 				lastMouseX, lastMouseY = pygame.mouse.get_pos()
 
@@ -244,34 +191,34 @@ while isRunning:
 				deltaY = mouseY - lastMouseY
 
 				cameraYaw += deltaX * mouseSensitivity
-				cameraPitch -= deltaY * mouseSensitivity  # Inverted for natural control
+				cameraPitch -= deltaY * mouseSensitivity
 
 				lastMouseX = mouseX
 				lastMouseY = mouseY
 
 		if event.type == pygame.MOUSEWHEEL:
-			cameraDistance -= event.y * 2.0  # Zoom in/out with mouse wheel
+			cameraDistance -= event.y * 2.0
 
-	# Keyboard controls for orbital camera
-	if keys[K_a]:  # Rotate left (circular movement)
+	# controles de teclado para cámara orbital
+	if keys[K_a]:
 		cameraYaw -= 60 * deltaTime
 
-	if keys[K_d]:  # Rotate right (circular movement)
+	if keys[K_d]:
 		cameraYaw += 60 * deltaTime
 
-	if keys[K_w]:  # Move up (vertical movement)
+	if keys[K_w]:
 		cameraPitch += 40 * deltaTime
 
-	if keys[K_s]:  # Move down (vertical movement)
+	if keys[K_s]:
 		cameraPitch -= 40 * deltaTime
 
-	if keys[K_q]:  # Zoom out
+	if keys[K_q]:
 		cameraDistance += 30 * deltaTime
 
-	if keys[K_e]:  # Zoom in
+	if keys[K_e]:
 		cameraDistance -= 30 * deltaTime
 
-	# Update camera position based on orbital parameters
+	# actualizar posición de cámara
 	updateOrbitalCamera()
 
 
@@ -283,11 +230,7 @@ while isRunning:
 		if rend.value < 1.0:
 			rend.value += 1 * deltaTime
 
-
-
-	# Rotate the current model
-	models[currentModelIndex].rotation.y += 45 * deltaTime
-
+	# rotación automática removida - los modelos permanecen estáticos
 
 	rend.Render()
 	pygame.display.flip()

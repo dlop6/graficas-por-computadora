@@ -157,25 +157,38 @@ class Model(object):
 
 	def _load_texture(self, filename):
 		"""Load a texture and return its OpenGL id (does not add to textures list)."""
-		textureSurface = pygame.image.load(filename)
-		textureData = pygame.image.tostring(textureSurface, "RGB", True)
+		try:
+			textureSurface = pygame.image.load(filename)
 
-		texture = glGenTextures(1)
-		glBindTexture(GL_TEXTURE_2D, texture)
+			# intentar convertir a RGB si tiene canal alfa
+			if textureSurface.get_bytesize() == 4:
+				textureData = pygame.image.tostring(textureSurface, "RGBA", True)
+				glFormat = GL_UNSIGNED_BYTE
+				internalFormat = 4  # RGBA
+			else:
+				textureData = pygame.image.tostring(textureSurface, "RGB", True)
+				glFormat = GL_UNSIGNED_BYTE
+				internalFormat = GL_RGB
 
-		glTexImage2D(GL_TEXTURE_2D,
-					 0,
-					 GL_RGB,
-					 textureSurface.get_width(),
-					 textureSurface.get_height(),
-					 0,
-					 GL_RGB,
-					 GL_UNSIGNED_BYTE,
-					 textureData)
+			texture = glGenTextures(1)
+			glBindTexture(GL_TEXTURE_2D, texture)
 
-		glGenerateMipmap(GL_TEXTURE_2D)
+			glTexImage2D(GL_TEXTURE_2D,
+						 0,
+						 internalFormat,
+						 textureSurface.get_width(),
+						 textureSurface.get_height(),
+						 0,
+						 GL_RGB if internalFormat == GL_RGB else 6408,  # 6408 = GL_RGBA
+						 glFormat,
+						 textureData)
 
-		return texture
+			glGenerateMipmap(GL_TEXTURE_2D)
+
+			return texture
+		except Exception as e:
+			print(f"  [WARN] No se pudo cargar textura {filename}: {e}")
+			return None
 
 
 	def Render(self):

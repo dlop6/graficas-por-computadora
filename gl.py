@@ -101,32 +101,29 @@ class Renderer(object):
         if self.skybox is not None:
             self.skybox.Render()
 
-
-        if self.activeShader is not None:
-            glUseProgram(self.activeShader)
-
-            glUniformMatrix4fv( glGetUniformLocation(self.activeShader, "viewMatrix"),
-                                1, GL_FALSE, glm.value_ptr(self.camera.viewMatrix) )
-
-            glUniformMatrix4fv( glGetUniformLocation(self.activeShader, "projectionMatrix"),
-                                1, GL_FALSE, glm.value_ptr(self.camera.projectionMatrix) )
-
-            glUniform3fv( glGetUniformLocation(self.activeShader, "pointLight"), 1, glm.value_ptr(self.pointLight) )
-            glUniform1f( glGetUniformLocation(self.activeShader, "ambientLight"), self.ambientLight )
-
-            glUniform1f( glGetUniformLocation(self.activeShader, "value"), self.value )
-            glUniform1f( glGetUniformLocation(self.activeShader, "time"), self.elapsedTime )
-
-
-            glUniform1i( glGetUniformLocation(self.activeShader, "tex0"), 0)
-            glUniform1i( glGetUniformLocation(self.activeShader, "tex1"), 1)
-
-
-
         for obj in self.scene:
 
-            if self.activeShader is not None:
-                glUniformMatrix4fv( glGetUniformLocation(self.activeShader, "modelMatrix"),
+            program = getattr(obj, "shaderProgram", None) or self.activeShader
+
+            if program is not None:
+                glUseProgram(program)
+
+                glUniformMatrix4fv( glGetUniformLocation(program, "viewMatrix"),
+                                    1, GL_FALSE, glm.value_ptr(self.camera.viewMatrix) )
+
+                glUniformMatrix4fv( glGetUniformLocation(program, "projectionMatrix"),
+                                    1, GL_FALSE, glm.value_ptr(self.camera.projectionMatrix) )
+
+                glUniform3fv( glGetUniformLocation(program, "pointLight"), 1, glm.value_ptr(self.pointLight) )
+                glUniform1f( glGetUniformLocation(program, "ambientLight"), self.ambientLight )
+
+                glUniform1f( glGetUniformLocation(program, "value"), self.value )
+                glUniform1f( glGetUniformLocation(program, "time"), self.elapsedTime )
+
+                glUniform1i( glGetUniformLocation(program, "tex0"), 0)
+                glUniform1i( glGetUniformLocation(program, "tex1"), 1)
+
+                glUniformMatrix4fv( glGetUniformLocation(program, "modelMatrix"),
                                 1, GL_FALSE, glm.value_ptr( obj.GetModelMatrix() ) )
 
             obj.Render()
