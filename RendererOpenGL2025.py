@@ -50,18 +50,17 @@ skyboxTextures = ["skybox/right.jpg",
 rend.CreateSkybox(skyboxTextures)
 
 
-# carga de modelos - fase 4 y 5
+# carga de modelos
 print("\n" + "="*60)
 print("CARGANDO ESCENA...")
 print("="*60)
 
-# fase 4: crear plataforma procedural
+# crear plataforma procedural
 stage = Stage(size=60, height=2.0)
 stage.position = glm.vec3(0, 0, 0)
 rend.scene.append(stage)
 print("[OK] Plataforma creada (60x60 unidades)")
 
-# fase 5: charizard + umbreon (test incremental)
 models = []
 
 # try:
@@ -137,13 +136,12 @@ except Exception as e:
 print(f"\nTotal modelos cargados: {len(models) + 1} (plataforma + {len(models)} pokémon)")
 print("="*60 + "\n")
 
-# fase 6: asignar shaders únicos a cada modelo (compilados ANTES del loop)
+# compilar y asignar shaders únicos por modelo
 print("Compilando shaders únicos...")
 from OpenGL.GL.shaders import compileProgram, compileShader
 from OpenGL.GL import GL_VERTEX_SHADER, GL_FRAGMENT_SHADER
 
 try:
-	# compilar shaders creativos UNA SOLA VEZ
 	pulsing_program = compileProgram(
 		compileShader(vertex_shader, GL_VERTEX_SHADER),
 		compileShader(rim_lighting_shader, GL_FRAGMENT_SHADER)
@@ -161,13 +159,11 @@ try:
 		compileShader(psychedelic_warp_shader, GL_FRAGMENT_SHADER)
 	)
 
-	# asignar shaders a modelos específicos
 	pokeball.shaderProgram = pulsing_program
 	charizard.shaderProgram = fire_program
 	eevee.shaderProgram = shiny_program
-	bulbasaur.shaderProgram = shiny_program  # mismo shader, diferente modelo
+	bulbasaur.shaderProgram = shiny_program
 	umbreon.shaderProgram = dark_program
-	# stage NO tiene shader único, usa el default del renderer
 
 	print("[OK] Shaders únicos asignados correctamente")
 except Exception as e:
@@ -176,76 +172,61 @@ except Exception as e:
 
 print("="*60 + "\n")
 
-# activar post-processing con bloom + vignette
+# post-processing
 print("Activando post-processing: Bloom + Vignette...")
 rend.SetPostProcessingShaders(vertex_postProcess, bloom_vignette_postProcess)
 print("[OK] Post-processing activado")
 print("="*60 + "\n")
 
-# sistema de cámara orbital independiente
-# solución directa: cámara frente a pokeball con profundidad y altura
-# pokeball está en (0, 3, 15)
-# colocar cámara en (0, 10, 40) mirando a pokeball = altura +7, profundidad +25
-cameraYaw = 0.0           # mirando directo hacia adelante (hacia -Z)
-cameraPitch = 20.0        # ligeramente elevada
-cameraDistance = 50.0     # distancia para ver toda la escena
-# target apunta a la pokeball
-cameraTarget = glm.vec3(0, 3, 15)  # pokeball
+# configuración cámara orbital
+cameraYaw = 0.0
+cameraPitch = 20.0
+cameraDistance = 50.0
+cameraTarget = glm.vec3(0, 3, 15)
 
-# lista de puntos de interés para saltos de vista (fase 7: cambio de vista entre modelos)
-# cada entrada apunta a la posición exacta de cada modelo cargado
 viewTargets = [
-	glm.vec3(0, 3, 0),        # 0: vista general (centro de plataforma) - TECLA 0
-	glm.vec3(0, 3, 15),       # 1: pokeball - TECLA 1
-	glm.vec3(15, 2, -15),     # 2: charizard - TECLA 2
-	glm.vec3(-15, 2, 15),     # 3: eevee - TECLA 3
-	glm.vec3(0, 5, 0),        # 4: umbreon (centro elevado) - TECLA 4
-	glm.vec3(15, 2, 15)       # 5: bulbasaur - TECLA 5
+	glm.vec3(0, 3, 0),
+	glm.vec3(0, 3, 15),
+	glm.vec3(15, 2, -15),
+	glm.vec3(-15, 2, 15),
+	glm.vec3(0, 5, 0),
+	glm.vec3(15, 2, 15)
 ]
 
-# límites de cámara ajustados para el diorama
 MIN_DISTANCE = 30.0
 MAX_DISTANCE = 150.0
 MIN_PITCH = -80.0
 MAX_PITCH = 80.0
 
-# control de mouse
 mouseSensitivity = 0.2
 mousePressed = False
 lastMouseX = 0
 lastMouseY = 0
 
-# modo circular automático (20 pts rúbrica)
 circularMotionEnabled = False
-circularRotationSpeed = 15.0  # grados por segundo
+circularRotationSpeed = 15.0
 
 def updateOrbitalCamera():
-	"""actualiza posición de cámara basada en parámetros orbitales"""
 	global cameraYaw, cameraPitch, cameraDistance, cameraTarget
 
-	# aplicar límites
 	cameraPitch = max(MIN_PITCH, min(MAX_PITCH, cameraPitch))
 	cameraDistance = max(MIN_DISTANCE, min(MAX_DISTANCE, cameraDistance))
 
-	# convertir a radianes
 	yawRad = glm.radians(cameraYaw)
 	pitchRad = glm.radians(cameraPitch)
 
-	# calcular posición usando coordenadas esféricas
 	x = cameraTarget.x + cameraDistance * glm.cos(pitchRad) * glm.sin(yawRad)
 	y = cameraTarget.y + cameraDistance * glm.sin(pitchRad)
 	z = cameraTarget.z + cameraDistance * glm.cos(pitchRad) * glm.cos(yawRad)
 
 	rend.camera.position = glm.vec3(x, y, z)
 
-	# lookat siempre apunta al target (independiente de modelos)
 	rend.camera.viewMatrix = glm.lookAt(
 		rend.camera.position,
 		cameraTarget,
 		glm.vec3(0, 1, 0)
 	)
 
-	# CRÍTICO: indicar que estamos usando lookAt para que Camera.Update() no sobrescriba
 	rend.camera.usingLookAt = True
 
 # inicializar posición de cámara
@@ -269,14 +250,11 @@ while isRunning:
 			if event.key == pygame.K_f:
 				rend.ToggleFilledMode()
 
-			# toggle movimiento circular automático (20 pts rúbrica)
 			if event.key == pygame.K_c:
 				circularMotionEnabled = not circularMotionEnabled
 				estado = "ACTIVADO" if circularMotionEnabled else "DESACTIVADO"
 				print(f"[CAMERA] Movimiento circular automático: {estado}")
 
-			# fase 7: cambio de vista entre modelos (15 pts)
-			# teclas numéricas 0-5 para enfocar cada modelo
 			if event.key == pygame.K_0:
 				cameraTarget = viewTargets[0]
 				print(f"[CAMERA] Vista: General")
@@ -345,13 +323,9 @@ while isRunning:
 	if keys[K_e]:
 		cameraDistance -= 30 * deltaTime
 
-	# movimiento circular automático (20 pts rúbrica)
-	# rotación continua alrededor del target cuando está activado
-	# IMPORTANTE: debe estar ANTES de updateOrbitalCamera()
 	if circularMotionEnabled:
 		cameraYaw += circularRotationSpeed * deltaTime
 
-	# actualizar posición de cámara
 	updateOrbitalCamera()
 
 
