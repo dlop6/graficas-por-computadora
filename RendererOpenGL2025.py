@@ -123,6 +123,16 @@ try:
 except Exception as e:
 	print(f"[WARN] No se pudo cargar bulbasaur: {e}")
 
+try:
+	pokeball = Model("models/ts1d43chvqbk-PokemonBall/Pokemon Go Ball.obj")
+	pokeball.position = glm.vec3(0, 3, 15)
+	pokeball.scale = glm.vec3(0.04, 0.04, 0.04)
+	rend.scene.append(pokeball)
+	models.append(("Pokeball", pokeball))
+	print(f"[OK] Pokeball cargado")
+except Exception as e:
+	print(f"[WARN] No se pudo cargar pokeball: {e}")
+
 print(f"\nTotal modelos cargados: {len(models) + 1} (plataforma + {len(models)} pokémon)")
 print("="*60 + "\n")
 
