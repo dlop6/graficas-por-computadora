@@ -93,15 +93,15 @@ try:
 except Exception as e:
 	print(f"[WARN] No se pudo cargar charizard: {e}")
 
-# try:
-# 	eevee = Model("models/eevee/eevee.obj")
-# 	eevee.position = glm.vec3(-15, 2, 15)
-# 	eevee.scale = glm.vec3(0.5, 0.5, 0.5)
-# 	rend.scene.append(eevee)
-# 	models.append(("Eevee", eevee))
-# 	print(f"[OK] Eevee cargado")
-# except Exception as e:
-# 	print(f"[WARN] No se pudo cargar eevee: {e}")
+try:
+	eevee = Model("models/eve/Pokemon XY/Eevee/Eevee.obj")
+	eevee.position = glm.vec3(-15, 2, 15)
+	eevee.scale = glm.vec3(0.5, 0.5, 0.5)
+	rend.scene.append(eevee)
+	models.append(("Eevee", eevee))
+	print(f"[OK] Eevee cargado")
+except Exception as e:
+	print(f"[WARN] No se pudo cargar eevee: {e}")
 
 try:
 	umbreon = Model("models/umbreon/Umbreon/UmbreonLowPoly.obj")

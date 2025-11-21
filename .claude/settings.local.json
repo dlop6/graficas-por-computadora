@@ -3,7 +3,8 @@
     "allow": [
       "Bash(cp:*)",
       "Bash(python RendererOpenGL2025.py:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
