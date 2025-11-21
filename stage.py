@@ -117,6 +117,7 @@ class Stage(object):
 
 		glDrawArrays(GL_TRIANGLES, 0, self.vertexCount)
 
-		glDisableVertexAttribArray(0)
-		glDisableVertexAttribArray(1)
-		glDisableVertexAttribArray(2)
+		# no deshabilitar atributos aquí - los modelos los reutilizan
+		# glDisableVertexAttribArray(0)
+		# glDisableVertexAttribArray(1)
+		# glDisableVertexAttribArray(2)

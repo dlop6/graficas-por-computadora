@@ -7,22 +7,27 @@ class Buffer(object):
 	def __init__(self, data):
 		self.data = data
 
-		# Vertex Buffer 
+		# Vertex Buffer
 		self.vertexBuffer = array(self.data, dtype = float32)
 
 		# Vertex Buffer Object
 		self.VBO = glGenBuffers(1)
+
+		# subir datos a GPU una sola vez (no en cada frame)
+		glBindBuffer(GL_ARRAY_BUFFER, self.VBO)
+		glBufferData(GL_ARRAY_BUFFER,
+					 self.vertexBuffer.nbytes,
+					 self.vertexBuffer,
+					 GL_STATIC_DRAW)
+		# unbind para evitar que buffers posteriores sobrescriban este
+		glBindBuffer(GL_ARRAY_BUFFER, 0)
 
 
 	def Use(self, attribNumber, size):
 
 		glBindBuffer(GL_ARRAY_BUFFER, self.VBO)
 
-		# Mandar la informacion de vertices
-		glBufferData(GL_ARRAY_BUFFER,               # Buffer ID
-					 self.vertexBuffer.nbytes,      # Buffer size in bytes
-					 self.vertexBuffer,             # Buffer data
-					 GL_STATIC_DRAW)                # Usage
+		# ya no llamamos glBufferData aquí - los datos ya están en GPU
 
 		# Atributo
 		glVertexAttribPointer(attribNumber,			# Attribute Number
